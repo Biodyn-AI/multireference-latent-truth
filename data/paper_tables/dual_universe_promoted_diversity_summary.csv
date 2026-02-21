@@ -1,0 +1,8 @@
+metric,value
+n_promoted_edges_total,842.0
+n_promoted_unique_sources,60.0
+n_promoted_unique_targets,600.0
+top1_source_fraction_promoted,0.32185273159144895
+top2_source_fraction_promoted,0.5902612826603325
+promoted_reference_fraction_full,0.00831353919239905
+promoted_reference_fraction_context,0.00831353919239905

@@ -1,0 +1,8 @@
+phase,theme,primary_report,status
+I,Baseline and dependence-aware latent truth,full_universe_multifactor_dropout_robustness_report.md,completed
+II,Family-regularized dependence stress tests,family_regularization_phase2_report.md,completed
+III,Hierarchical family-Bayes robustness,hierarchical_family_phase3_report.md,completed
+IV,Multipanel perturbation calibration,multipanel_perturbation_phase4_report.md,completed
+V,Joint objective pilot,joint_objective_phase5_report.md,completed
+VI,Context-matched uncertainty sweep,joint_objective_uncertainty_context_phase6_report.md,completed
+VII,Dual-universe claim governance,dual_universe_governance_phase7_report.md,completed

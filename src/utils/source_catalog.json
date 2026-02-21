@@ -1,0 +1,121 @@
+[
+  {
+    "id": "trrust_human",
+    "kind": "reference",
+    "loader": "trrust_no_header",
+    "path": "single_cell_mechinterp/external/networks/trrust_human.tsv"
+  },
+  {
+    "id": "dorothea_ab",
+    "kind": "reference",
+    "loader": "dorothea_confidence",
+    "path": "single_cell_mechinterp/external/networks/dorothea_human.tsv",
+    "confidence": ["A", "B"]
+  },
+  {
+    "id": "dorothea_chipseq_ab",
+    "kind": "reference",
+    "loader": "dorothea_confidence",
+    "path": "single_cell_mechinterp/external/networks/dorothea_chipseq_human.tsv",
+    "confidence": ["A", "B"]
+  },
+  {
+    "id": "beeline_gsd",
+    "kind": "reference",
+    "loader": "edge_tsv",
+    "path": "network_inference/data/beeline_gsd_refnetwork.tsv"
+  },
+  {
+    "id": "hpn_dream",
+    "kind": "reference",
+    "loader": "edge_tsv",
+    "path": "network_inference/data/hpn_dream_goldstandard.tsv"
+  },
+  {
+    "id": "timeseries_proxy",
+    "kind": "reference",
+    "loader": "edge_tsv",
+    "path": "network_inference/data/timeseries_edges_proxy.tsv"
+  },
+  {
+    "id": "dixit_perturb_top500",
+    "kind": "reference",
+    "loader": "perturbation_edges",
+    "path": "single_cell_mechinterp/outputs/perturb_validation/dixit_causal_dixit_targets_tiny_neg/perturbation_edges.tsv",
+    "score_col": "abs_delta"
+  },
+  {
+    "id": "invariant_top_edges",
+    "kind": "mechanistic",
+    "loader": "invariant_scores",
+    "path": "single_cell_mechinterp/outputs/invariant_causal_edges/results/top_invariant_edges.tsv",
+    "score_col": "invariance_score"
+  },
+  {
+    "id": "attention_inferred",
+    "kind": "method",
+    "loader": "scored_edges",
+    "path": "network_inference/outputs/inferred_edges.tsv",
+    "score_col": "score"
+  },
+  {
+    "id": "attention_regulatory",
+    "kind": "method",
+    "loader": "scored_edges",
+    "path": "network_inference/outputs/inferred_edges_regulatory.tsv",
+    "score_col": "score"
+  },
+  {
+    "id": "omnipath_relaxed_immune_hpn",
+    "kind": "method",
+    "loader": "scored_edges",
+    "path": "network_inference/outputs/inferred_edges_omnipath_relaxed_immune_hpn.tsv",
+    "score_col": "score"
+  },
+  {
+    "id": "omnipath_dorothea_union_immune_hpn",
+    "kind": "method",
+    "loader": "scored_edges",
+    "path": "network_inference/outputs/inferred_edges_omnipath_dorothea_union_immune_hpn.tsv",
+    "score_col": "score"
+  },
+  {
+    "id": "omnipath_dorothea_intersection_immune_hpn",
+    "kind": "method",
+    "loader": "scored_edges",
+    "path": "network_inference/outputs/inferred_edges_omnipath_dorothea_intersection_immune_hpn.tsv",
+    "score_col": "score"
+  },
+  {
+    "id": "omnipath_intercell_union_immune_hpn",
+    "kind": "method",
+    "loader": "scored_edges",
+    "path": "network_inference/outputs/inferred_edges_omnipath_intercell_union_immune_hpn.tsv",
+    "score_col": "score"
+  },
+  {
+    "id": "omnipath_intercell_union_sources_immune_hpn",
+    "kind": "method",
+    "loader": "scored_edges",
+    "path": "network_inference/outputs/inferred_edges_omnipath_intercell_union_sources_immune_hpn.tsv",
+    "score_col": "score"
+  },
+  {
+    "id": "baseline_trrust",
+    "kind": "method",
+    "loader": "edge_tsv",
+    "path": "network_inference/outputs/baseline_edges_trrust.tsv"
+  },
+  {
+    "id": "baseline_omnipath",
+    "kind": "method",
+    "loader": "edge_tsv",
+    "path": "network_inference/outputs/baseline_edges_omnipath.tsv"
+  },
+  {
+    "id": "baseline_random_3950",
+    "kind": "method",
+    "loader": "edge_tsv",
+    "path": "network_inference/outputs/baseline_edges_random_3950.tsv"
+  }
+]

@@ -1,0 +1,8 @@
+kpi,value
+context_over_full_precision_at_5000_ratio,30.71428571428571
+context_over_full_best_f1_ratio,25.97568932038879
+promoted_edges_total,842.0
+promoted_edge_fraction_full_universe,0.0019975279997912323
+context_edge_fraction_promoted,0.1117303609341826
+context_tier_exact_match_fraction,0.0558651804670913
+context_tier_within_one_fraction,0.6389331210191083

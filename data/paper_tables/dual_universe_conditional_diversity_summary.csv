@@ -1,0 +1,7 @@
+metric,value
+n_conditional_edges_total,8316.0
+n_conditional_unique_sources,885.0
+n_conditional_unique_targets,2621.0
+conditional_context_coverage_fraction,0.5
+conditional_missing_context_posterior_fraction,0.5
+conditional_mean_tier_gap_abs,0.8272005772005772
