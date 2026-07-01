@@ -3,7 +3,7 @@
 % ---- Packages ----
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-\usepackage{mathptmx}           % Times font
+\usepackage{mathptmx}           % Times font (De Gruyter standard serif)
 \usepackage[margin=2.5cm]{geometry}
 \usepackage{graphicx}
 \usepackage{booktabs}
@@ -11,11 +11,13 @@
 \usepackage{xcolor}
 \usepackage{hyperref}
 \usepackage{cleveref}
-\usepackage{natbib}
+\usepackage[authoryear,round]{natbib}  % Harvard-style author-date citations
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{multirow}
 \usepackage{float}
+\usepackage{url}
+\usepackage{lineno}           % Line numbering for review
 
 \hypersetup{
   colorlinks=true,
@@ -26,6 +28,10 @@
 
 \captionsetup{font=small, labelfont=bf}
 
+% Revision change-marking: new/modified passages are set in blue for the editor.
+% \long so the argument may contain paragraph breaks and display equations.
+\long\def\rev#1{{\color{blue!70!black}#1}}
+
 % ---- Title ----
 \title{%
   Latent Truth Without a Gold Standard:\\
@@ -34,15 +40,21 @@
 }
 
 \author{%
-  Ihor Kendiukhov\\
-  University of T\"ubingen, Computer Science Department\\
-  \texttt{kenduhov.ig@gmail.com}
+  Ihor Kendiukhov\textsuperscript{*}\\[4pt]
+  {\normalsize Department of Computer Science, University of T\"ubingen, T\"ubingen, Germany}\\[2pt]
+  {\normalsize \texttt{kenduhov.ig@gmail.com}}\\[2pt]
+  {\small ORCID: \url{https://orcid.org/0000-0001-5342-1499}}
 }
 
 \date{}
 
 \begin{document}
+\linenumbers
 \maketitle
+
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\footnotetext[1]{Corresponding author: Ihor Kendiukhov, Department of Computer Science, University of T\"ubingen, Sand 14, 72076 T\"ubingen, Germany. E-mail: kenduhov.ig@gmail.com}
+\renewcommand{\thefootnote}{\arabic{footnote}}
 
 % ======================================================================
 % ABSTRACT
@@ -51,13 +63,15 @@
 Gene-regulatory-network (GRN) inference from single-cell foundation models is typically benchmarked against a single curated reference, even though available references are incomplete, noisy, and context-biased.
 We propose a multi-reference latent truth framework that treats each reference database as a noisy evidence channel and estimates per-edge credibility under explicit source dependence.
 We compare five latent-truth estimators of increasing complexity and find that a hierarchical family-Bayes model achieves the lowest rank disagreement under both source-dropout and family-block-dropout stress tests on a 421,521-edge candidate space.
-A dual-universe evaluation reveals that context-conditioned perturbation calibration outperforms na\"ive full-universe evaluation by a factor of 23--31$\times$ across precision and F1 metrics, demonstrating that context matching is critical for meaningful benchmarking.
-We introduce a four-tier dual-universe claim governance policy that restricts promotion to edges supported in both evaluation contexts and show that it reduces overpromotion to 0.2\% of the candidate space while maintaining perturbation-backed enrichment of $2.2\times$ ($p \ll 0.05$) on pre-registered external panels.
-Leave-one-cohort-out replication across six perturbation cohorts yields a pass rate of 5/6, with the single failure explained by sparse reference support ($<$10 edges), providing an operational reliability threshold.
+A dual-universe evaluation contrasts a full candidate space with a context-matched universe.
+\rev{The raw precision and F1 gap between the two contexts is large (23--31$\times$), but we show through an explicit decomposition that it is almost entirely a base-rate artifact: the context-matched universe has a $25.8\times$ higher density of evaluable perturbation references, so once metrics are normalized to a denominator-invariant enrichment-over-random the genuine ranking difference between contexts is modest ($\approx$1.4$\times$). This reconciles the apparent uplift with universe-aware evaluation and motivates reporting prevalence-normalized enrichment rather than raw precision.}
+We introduce a four-tier dual-universe claim governance policy that restricts promotion to edges supported in both evaluation contexts and show that it reduces overpromotion to 0.2\% of the candidate space while achieving denominator-invariant perturbation-backed enrichment of $2.2\times$ ($p \ll 0.05$) on pre-registered panels.
+\rev{The promoted set is further validated against a genuinely external ChIP-seq reference (ENCODE, never used in the fusion), where it is enriched $1.77\times$--$2.12\times$ ($p<10^{-7}$), with a clean monotone separation across governance tiers.}
+Leave-one-cohort-out replication across six perturbation cohorts yields a pass rate of 5/6, with the single failure explained by sparse reference support ($<$10 edges); \rev{given the small number of cohorts, we treat this as an exploratory reliability threshold rather than a definitive operating boundary.}
 All analyses run on laptop-scale table-level pipelines, requiring no GPU compute.
 \end{abstract}
 
-\noindent\textbf{Keywords:} gene regulatory networks, benchmarking, latent truth model, multi-reference fusion, mechanistic interpretability, single-cell foundation models
+\noindent\textbf{Keywords:} gene regulatory networks; benchmarking; latent truth model; multi-reference fusion; mechanistic interpretability; single-cell foundation models
 
 % ======================================================================
 % 1. INTRODUCTION
@@ -70,7 +84,7 @@ Evaluating the accuracy of these predicted networks, however, depends on compari
 
 The standard practice of treating a single reference as ground truth introduces at least three problems.
 First, different references can produce materially different method rankings for the same predictions, because each database captures a different slice of the true regulatory landscape~\citep{pratapa2020benchmarking}.
-Second, reference completeness varies sharply by biological context: databases curated primarily from immune cells may not reflect regulatory logic in metabolic or developmental tissues.
+Second, reference completeness varies sharply by biological context: databases curated primarily from immune cells may not reflect regulatory logic in metabolic or developmental tissues~\citep{schiebinger2019optimal, kamimoto2023dissecting}.
 Third, correlated curation biases across reference families (for example, databases that share upstream literature sources) can inflate apparent agreement without improving biological fidelity.
 
 In this paper, we address these challenges by proposing a \emph{multi-reference latent truth framework} that replaces the single-reference assumption with an explicit probabilistic model of reference credibility.
@@ -79,9 +93,9 @@ We make four contributions:
 
 \begin{enumerate}
   \item We develop a family of five latent-truth estimators of increasing sophistication, culminating in a hierarchical family-Bayes model that pools information across correlated reference families while preserving source-specific signal.
-  \item We introduce a \emph{dual-universe evaluation} framework that measures perturbation calibration in both a full candidate space (421,521 edges) and a context-matched universe (7,536 edges), quantifying the dramatic effect of context conditioning on all standard metrics.
-  \item We propose a four-tier \emph{claim governance} policy that cross-references evidence from both universes and restricts edge promotion to those with consistent support, reducing overconfident claims from hundreds of thousands to 842 promotion-eligible edges.
-  \item We validate the framework through pre-registered leave-one-cohort-out replication across six perturbation datasets, identifying an operational reliability threshold based on reference support density.
+  \item We introduce a \emph{dual-universe evaluation} framework that measures perturbation calibration in both a full candidate space (421,521 edges) and a context-matched universe (7,536 edges). \rev{We show that the large apparent gap in raw precision between these contexts is driven overwhelmingly by their differing reference density (a denominator effect), and advocate reporting denominator-invariant enrichment-over-random as the universe-aware quantity of interest.}
+  \item We propose a four-tier \emph{claim governance} policy that cross-references evidence from both universes and restricts edge promotion to those with consistent support, reducing overconfident claims from hundreds of thousands to 842 promotion-eligible edges. \rev{We provide exact tier definitions, a $\pm$10\% cutoff sensitivity analysis, a per-tier risk/return breakdown, an automated diversity--precision operating-point selector, and a functional characterization of the promoted set.}
+  \item We validate the framework through pre-registered leave-one-cohort-out replication across six perturbation datasets \rev{and against a genuinely external ChIP-seq reference set (ENCODE) that is not used anywhere in the credibility model}, identifying an exploratory reliability threshold based on reference support density.
 \end{enumerate}
 
 All analyses run on laptop-scale table-level pipelines requiring no GPU compute, making the framework accessible for routine benchmarking workflows.
@@ -92,24 +106,25 @@ All analyses run on laptop-scale table-level pipelines requiring no GPU compute,
 \section{Related Work}\label{sec:related}
 
 \paragraph{GRN inference and benchmarking.}
-Classical GRN inference methods, including GENIE3~\citep{huynh2010inferring} and GRNBoost2~\citep{moerman2019grnboost2}, recover regulatory relationships from expression data using tree-based or correlation-based approaches.
+Classical GRN inference methods, including GENIE3~\citep{huynh2010inferring}, GRNBoost2~\citep{moerman2019grnboost2}, and SCENIC~\citep{aibar2017scenic}, recover regulatory relationships from expression data using tree-based or correlation-based approaches.
 Benchmarking studies have documented substantial protocol sensitivity, with method rankings changing depending on reference choice, preprocessing pipeline, and evaluation metric~\citep{pratapa2020benchmarking}.
 Recent work has extended inference to single-cell foundation model internals, but the evaluation methodology has largely inherited single-reference assumptions from the classical setting.
 
 \paragraph{Multi-source data fusion and latent truth models.}
 The problem of estimating a latent truth from multiple noisy sources has a long history in statistics and machine learning.
-The Dawid--Skene model~\citep{dawid1979maximum} and its extensions model annotator reliability to infer true labels from noisy crowd-sourced annotations.
+The Dawid--Skene model~\citep{dawid1979maximum} and its extensions, including the Bayesian formulation of \citet{raykar2010learning}, model annotator reliability to infer true labels from noisy crowd-sourced annotations.
 In genomics, meta-analytic approaches have been used to combine evidence across studies~\citep{tseng2012comprehensive}, but typically assume source independence and equal weighting rather than modeling explicit dependence structures.
 Our work adapts the latent-truth paradigm specifically to GRN reference databases, incorporating family-level dependence to account for correlated curation biases.
 
 \paragraph{Evaluation bias in GRN recovery.}
 Several recent studies have highlighted how evaluation choices can bias GRN benchmarking conclusions.
-Candidate-set composition, symbol-mapping conventions, and metric selection can each produce ranking reversals among methods that appear comparable~\citep{kendiukhov2026evalbias, kendiukhov2026ranking}.
-Context dependence of evaluation, where reference coverage varies across tissues and cell states, has been documented but not systematically addressed through multi-reference modeling.
+Candidate-set composition, symbol-mapping conventions, and metric selection can each produce ranking reversals among methods that appear comparable~\citep{pratapa2020benchmarking, jackson2020gene}.
+Context dependence of evaluation, where reference coverage varies across tissues and cell states, has been documented but not systematically addressed through multi-reference modeling~\citep{bravo2023scenic}.
+\rev{A closely related diagnostic point is that restricting the candidate set to known regulator--target pairs inflates precision-type metrics by one to three orders of magnitude relative to a universe-aware evaluation over all biologically plausible pairs, purely through the change in denominator~\citep{kendiukhov2025universe}. The present work is the constructive counterpart to that diagnosis: rather than choosing a single candidate universe, we evaluate in two universes simultaneously, decompose the resulting metric gap into its denominator and signal components, and use denominator-invariant enrichment for all promotion decisions.}
 
 \paragraph{Perturbation-grounded validation.}
-CRISPR perturbation datasets, including Perturb-seq screens from \citet{dixit2016perturb}, \citet{adamson2016multiplexed}, and others, provide partial external anchors for GRN predictions.
-However, perturbation coverage is sparse relative to the full space of predicted regulatory edges, and overlap with curated references varies by tissue context~\citep{kendiukhov2026causal}.
+CRISPR perturbation datasets, including Perturb-seq screens from \citet{dixit2016perturb}, \citet{adamson2016multiplexed}, and the Perturb-seq atlas of \citet{replogle2022mapping}, provide partial external anchors for GRN predictions.
+However, perturbation coverage is sparse relative to the full space of predicted regulatory edges, and overlap with curated references varies by tissue context~\citep{kamimoto2023dissecting}.
 
 % ======================================================================
 % 3. METHODS
@@ -136,6 +151,64 @@ We fit a progression of five estimators of increasing complexity:
   \item \textbf{Hierarchical Family-Bayes (Family-HB)}: the primary model, which places a hierarchical prior over source reliability parameters within each family, enabling partial pooling of sensitivity and specificity estimates across correlated family members while preserving source-level heterogeneity. Hyperparameters are tuned via a joint objective over robustness and perturbation calibration (see \Cref{sec:joint}).
 \end{enumerate}
 
+\rev{
+\subsubsection*{Hierarchical Family-Bayes: full specification}\label{sec:familyhb}
+\emph{Latent states.} Each edge $e_i$ is assigned a three-state latent variable
+$z_i \in \{T, N_0, N_1\}$: a true edge ($T$), a ``clean'' negative ($N_0$), or a
+``bursty'' negative ($N_1$) that some sources spuriously report at an elevated rate
+(e.g.\ high-degree hubs that accrue false annotations). The state prior is
+\begin{equation}
+  P(z_i{=}T)=\pi,\qquad P(z_i{=}N_0)=(1-\pi)(1-\rho),\qquad P(z_i{=}N_1)=(1-\pi)\rho,
+\end{equation}
+where $\pi$ is the edge prevalence and $\rho$ the burst fraction among negatives.
+
+\emph{Emissions.} Conditional on the state, each source $j$ reports $r_{ij}\in\{0,1\}$
+independently with state-specific rates
+\begin{equation}
+  \alpha_j = P(r_{ij}{=}1\mid T),\quad
+  \beta^{0}_j = P(r_{ij}{=}1\mid N_0),\quad
+  \beta^{1}_j = P(r_{ij}{=}1\mid N_1),
+\end{equation}
+so that $\alpha_j$ is source sensitivity and $\beta^0_j,\beta^1_j$ are clean/bursty
+false-positive rates. Writing $\mathcal{O}_i$ for the set of sources that observe
+$e_i$, the unnormalized state responsibilities are
+\begin{equation}
+  \tilde{\gamma}_i^{s} = P(z_i{=}s)\!\!\prod_{j\in\mathcal{O}_i}\!\!
+  \theta^{s}_j{}^{\,r_{ij}}\,(1-\theta^{s}_j)^{1-r_{ij}},\qquad
+  \theta^{T}\!=\alpha,\ \theta^{N_0}\!=\beta^{0},\ \theta^{N_1}\!=\beta^{1},
+\end{equation}
+and the per-edge credibility used throughout the paper is the true-state posterior
+\begin{equation}
+  P(z_i{=}T\mid \mathbf{r}_i) \;=\;
+  \frac{\tilde{\gamma}_i^{T}}{\tilde{\gamma}_i^{T}+\tilde{\gamma}_i^{N_0}+\tilde{\gamma}_i^{N_1}}.
+  \label{eq:credibility}
+\end{equation}
+
+\emph{Hierarchical shrinkage.} Sources are partitioned into families $f(j)$ by curation
+lineage (all \textsc{DoRothEA} variants, \textsc{TRRUST}, small gold standards,
+time-series proxy, perturbation proxy, mechanistic-invariant). Each source parameter is
+shrunk toward its family mean, which is in turn shrunk toward a global mean anchored on
+the empirical base rates. For a generic rate $\theta$ with per-source expected counts
+$(\mathrm{pos}_j,\mathrm{tot}_j)$ from the E-step, the M-step is the Beta-posterior mean
+\begin{equation}
+  \theta_j \;=\;
+  \frac{\mathrm{pos}_j + m_{f(j)}\,\kappa_\theta + 1}
+       {\mathrm{tot}_j + \kappa_\theta + 2},
+  \qquad
+  m_f \;=\;
+  \frac{\sum_{j:f(j)=f} w_j\,\hat\theta_j + \kappa_{\mathrm{fam}}\,g}
+       {\sum_{j:f(j)=f} w_j + \kappa_{\mathrm{fam}}},
+\end{equation}
+where $m_f$ is the family mean, $g$ the global mean (updated analogously with strength
+$\kappa_{\mathrm{glob}}$ toward the empirical base rate), $\hat\theta_j$ the source MLE,
+and $w_j=\log(1+\mathrm{tot}_j)$ an evidence weight. Prior concentrations are
+$\kappa_\alpha{=}12$ for sensitivity, $\kappa_\beta{=}24$ for the false-positive rates,
+$\kappa_{\mathrm{fam}}{=}4$, and $\kappa_{\mathrm{glob}}{=}2$. Two identifiability
+constraints are enforced each iteration: a minimum clean Youden margin
+$\alpha_j \ge \beta^0_j + 0.01$ and a minimum burst gap $\beta^1_j \ge \beta^0_j+10^{-4}$.
+The E- and M-steps alternate until the change in log-likelihood falls below $10^{-6}$.
+}
+
 \subsection{Robustness Stress Protocols}\label{sec:robustness}
 
 We evaluate model stability under two structured perturbation protocols applied to the source set:
@@ -146,6 +219,26 @@ We evaluate model stability under two structured perturbation protocols applied 
 \end{itemize}
 
 For each protocol, we report \emph{mean rank disagreement} (averaged over all dropout configurations), \emph{max rank disagreement} (worst-case configuration), and posterior prevalence shifts $|\Delta\pi|$.
+
+\rev{
+\emph{Rank-disagreement metric.} Let $\mathcal{M}$ be the set of benchmarked GRN
+inference methods, each scored by a posterior-weighted $F_1$ under a given credibility
+posterior. For any posterior $p$ and ordered method pair $(a,b)$ define the sign
+$\sigma^{p}_{ab}=\operatorname{sign}\!\big(F_1^{p}(a)-F_1^{p}(b)\big)\in\{-1,0,+1\}$.
+Comparing the full-source posterior $p$ against a dropout posterior $p'$, the rank
+disagreement is the fraction of \emph{non-tied, comparable} method pairs whose ordering
+flips:
+\begin{equation}
+  D(p,p') \;=\;
+  \frac{\big|\{(a,b): a<b,\ \sigma^{p}_{ab}\neq 0,\ \sigma^{p'}_{ab}\neq 0,\ \sigma^{p}_{ab}\neq\sigma^{p'}_{ab}\}\big|}
+       {\big|\{(a,b): a<b,\ \sigma^{p}_{ab}\neq 0,\ \sigma^{p'}_{ab}\neq 0\}\big|}\,,
+  \label{eq:rankdisagreement}
+\end{equation}
+i.e.\ a normalized Kendall-style pairwise distance between the two induced method
+orderings, taking values in $[0,1]$ (0 = identical ranking, 1 = fully reversed). Mean
+and max rank disagreement aggregate $D$ over all single-source (or single-family)
+dropout configurations, and each proportion is reported with a Wilson 95\% interval.
+}
 
 \subsection{Perturbation Calibration and Context Matching}\label{sec:calibration}
 
@@ -158,6 +251,13 @@ Because perturbation coverage is sparse relative to the full 421,521-edge candid
 \end{itemize}
 
 Standard ranking metrics (precision@$k$, best F1, best precision) are computed in both universes under matched model hyperparameters.
+\rev{Because precision@$k$ is only defined for $k$ no larger than the universe size, we evaluate it at $k'=\min(k,|\mathcal{U}|)$; note that for $k\ge|\mathcal{U}|$ the metric degenerates to the reference base rate of the universe. Since raw precision is inherently denominator-dependent and therefore not comparable across universes of different reference density, our primary universe-aware quantity is the \emph{enrichment over random} (lift),
+\begin{equation}
+  \mathrm{Enr}@k \;=\; \frac{\mathrm{precision}@k}{\text{base rate}}\,,\qquad
+  \text{base rate}=\frac{\#\text{reference edges in }\mathcal{U}}{|\mathcal{U}|}\,,
+  \label{eq:enrichment}
+\end{equation}
+which is invariant to the universe denominator and to the overall reference prevalence, and thus isolates genuine ranking signal from base-rate differences. All promotion decisions and external-validation comparisons in \Cref{sec:results} use \Cref{eq:enrichment}.}
 
 \subsection{Joint Hyperparameter Objective}\label{sec:joint}
 
@@ -182,7 +282,26 @@ These are combined into a dual-universe governance tier:
   \item \emph{Exploratory}: low calibration in both universes. Promotion blocked.
 \end{enumerate}
 
+\rev{
+\emph{Exact tier cutoffs.} The per-universe perturbation tier is defined by \emph{rank}
+in that universe's credibility ranking, not by an ad hoc score threshold. Ranking edges
+by the calibration score (posterior with deterministic tie-breaks on observed- and
+positive-source counts), an edge is \textsc{PERT-Strong} if its rank $\le k_1=500$,
+\textsc{PERT-Moderate} if $\le k_2=5{,}000$, \textsc{PERT-Exploratory} if $\le k_3=20{,}000$,
+and \textsc{PERT-Background} otherwise; the same $(k_1,k_2,k_3)$ are applied independently
+in each universe (with $k$ capped at the universe size, so the context universe has no
+Background tier). The dual-universe tier is the deterministic combination of the two
+per-universe ranks $r_{\mathrm{ctx}},r_{\mathrm{full}}\in\{4,3,2,1\}$ (Strong$=4$ to
+Background$=1$): an edge is \emph{Strong} iff $r_{\mathrm{ctx}}\ge4 \wedge r_{\mathrm{full}}\ge3$;
+\emph{Moderate} iff $r_{\mathrm{ctx}}\ge3 \wedge r_{\mathrm{full}}\ge3$ and not Strong;
+\emph{Conditional} iff exactly one universe reaches Moderate or the edge is absent from the
+context universe while $r_{\mathrm{full}}\ge3$; \emph{Exploratory} otherwise. These cutoffs
+are heuristic rank budgets rather than the output of an optimization; \Cref{sec:res-governance}
+reports a $\pm10\%$ sensitivity analysis showing the promoted pool and its downstream
+enrichment are stable to their exact values.}
+
 Promotion is restricted to edges in the Strong and Moderate tiers, and a source-deconcentration policy is optionally applied to reduce over-representation of high-degree transcription factors (TFs) among promoted edges.
+\rev{Rather than fixing an arbitrary promotion budget, we select the deconcentration operating point automatically by maximizing a diversity--precision objective (\Cref{sec:res-concentration}).}
 
 \subsection{Pre-registered Replication Protocol}\label{sec:replication}
 
@@ -197,7 +316,7 @@ A cohort-level Bayesian posterior model provides continuous confidence estimates
 \section{Experimental Setup}\label{sec:setup}
 
 \paragraph{Candidate edge space.}
-The full candidate space consists of 421,521 predicted TF--target edges extracted from scGPT model internals (attention-based and probe-based) across immune tissue cohorts.
+The full candidate space consists of 421,521 predicted TF--target edges extracted from scGPT model internals (attention-based and probe-based) across immune tissue cohorts derived from the 10x Genomics Chromium platform~\citep{zheng2017massively}.
 The context-matched universe retains 7,536 edges where both curated reference coverage and perturbation reference coverage exceed minimum thresholds.
 
 \paragraph{Reference databases.}
@@ -256,39 +375,58 @@ This indicates that hierarchical shrinkage across correlated reference families 
   \end{tabular}
 \end{table}
 
-\subsection{Context Conditioning Produces a 23--31$\times$ Calibration Uplift}\label{sec:res-calibration}
+\subsection{The Context ``Uplift'' Is Almost Entirely a Base-Rate Effect}\label{sec:res-calibration}
 
-\Cref{fig:calibration} shows the dramatic effect of context matching on perturbation calibration metrics.
-Under matched Family-HB hyperparameters, the context-matched universe yields precision@5000 of 0.043 versus 0.0014 in the full universe (a $30.7\times$ ratio), best F1 of 0.096 versus 0.004 ($26.0\times$), and best precision of 0.053 versus 0.002 ($23.2\times$).
+\Cref{fig:calibration} shows that raw perturbation-calibration metrics are much higher in the context-matched universe: under matched Family-HB hyperparameters, precision@5000 is 0.043 versus 0.0014 in the full universe (a $30.7\times$ ratio), best F1 is 0.096 versus 0.004 ($26.0\times$), and best precision is 0.053 versus 0.002 ($23.2\times$).
+\rev{Taken at face value these ratios suggest an order-of-magnitude ``calibration uplift'' from context matching. However, the two universes differ sharply in the density of \emph{evaluable} perturbation references: the context universe contains 237 reference edges among 7{,}536 candidates (base rate $3.14\%$), whereas the full universe contains 514 among 421{,}521 (base rate $0.122\%$). The base-rate ratio alone is $25.8\times$. Because precision scales with the base rate, most of the apparent uplift is a denominator artifact rather than superior ranking.}
 
-This gap arises because the full universe is dominated by perturbation-unmatched background edges that dilute all precision-based metrics.
-The result has a direct methodological implication: reporting calibration metrics on the full candidate space without context matching will systematically underestimate the biological signal captured by the model, potentially leading to false negative conclusions about model quality.
+\rev{To separate the two contributions we decompose the raw precision ratio multiplicatively into a base-rate term and a denominator-invariant \emph{signal} term (\Cref{eq:enrichment}):
+\[
+  \underbrace{\frac{\mathrm{P}@k_{\mathrm{ctx}}}{\mathrm{P}@k_{\mathrm{full}}}}_{\text{raw ratio}}
+  \;=\;
+  \underbrace{\frac{\text{base}_{\mathrm{ctx}}}{\text{base}_{\mathrm{full}}}}_{25.8\times}
+  \times
+  \underbrace{\frac{\mathrm{Enr}@k_{\mathrm{ctx}}}{\mathrm{Enr}@k_{\mathrm{full}}}}_{\approx1.4\times\ (k=5000)}.
+\]
+At the operating depth $k=5000$, the enrichment-over-random is $1.37\times$ in the context universe and $0.98\times$ (indistinguishable from random) in the full universe, so the genuine ranking difference between contexts is only $\approx1.4\times$ (\Cref{tab:calibration}, \Cref{fig:univ}). In other words, essentially all of the headline $23$--$31\times$ is attributable to the $25.8\times$ base-rate difference. This is the same denominator mechanism that inflates restricted-candidate metrics relative to universe-aware evaluation~\citep{kendiukhov2025universe}; the practical implication is not that context matching ``improves'' the model, but that raw precision is not comparable across universes and denominator-invariant enrichment (\Cref{eq:enrichment}) must be used instead.}
+
+\rev{\Cref{fig:univ}a further shows that the denominator-invariant signal is weak and concentrated in coarse posterior-tie blocks: in the full universe the enrichment stays near or below $1\times$ across most of the ranking and rises only where a large block of tied high-posterior edges (heavily supported by curated references) enters, while in the context universe it peaks near $1.7\times$. The signal-to-noise ratio therefore does not improve smoothly with depth; it is dominated by a small number of high-consensus edges. This is precisely why the governance layer below relies on cross-universe consistency and enrichment rather than on either universe's raw precision.}
 
 \begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{figures/fig2_calibration.pdf}
-  \caption{(a) Calibration metrics in context-matched versus full-universe evaluation on a log scale.
-  (b) The ratio of context-matched to full-universe performance, showing 23--31$\times$ uplift across all metrics.}
+  \caption{(a) Raw calibration metrics in context-matched versus full-universe evaluation on a log scale.
+  (b) The \rev{raw} ratio of context-matched to full-universe performance \rev{(23--31$\times$); as shown in \Cref{tab:calibration} and \Cref{fig:univ}, this ratio is dominated by the $25.8\times$ difference in reference base rate rather than by genuine ranking signal}.}
   \label{fig:calibration}
 \end{figure}
 
 \begin{table}[t]
   \centering
-  \caption{Calibration metrics under matched Family-HB hyperparameters.
-  The context-matched universe provides dramatically stronger signal across all ranking metrics.}
+  \caption{\rev{Calibration metrics under matched Family-HB hyperparameters, decomposed into base-rate and denominator-invariant signal components. Raw precision is far higher in the context universe, but so is the reference base rate; the enrichment over random ($\mathrm{Enr}@k=\mathrm{P}@k/\text{base}$, \Cref{eq:enrichment}) shows the genuine ranking signal is modest in both. The raw P@5000 ratio ($30.7\times$) factors as base-rate ratio ($25.8\times$) $\times$ signal ratio ($1.4\times$).}}
   \label{tab:calibration}
   \small
-  \begin{tabular}{@{}lcccccc@{}}
+  \begin{tabular}{@{}lccccc@{}}
     \toprule
-    Universe & Ref.\ edges & Best prec. & Best recall & Best F1 & P@5000 & Ratio \\
+    Universe & Ref.\ edges & Base rate & P@5000 & \rev{$\mathrm{Enr}@5000$} & Best F1 \\
     \midrule
-    Context-matched & 237 & 0.053 & 0.519 & 0.096 & 0.043 & --- \\
-    Full universe   & 514 & 0.002 & 0.010 & 0.004 & 0.001 & --- \\
+    Context-matched & 237 & \rev{0.0314} & 0.043 & \rev{1.37$\times$} & 0.096 \\
+    Full universe   & 514 & \rev{0.00122} & 0.0014 & \rev{0.98$\times$} & 0.004 \\
     \midrule
-    \multicolumn{2}{@{}l}{Context / full ratio} & 23.2$\times$ & --- & 26.0$\times$ & 30.7$\times$ & --- \\
+    \multicolumn{2}{@{}l}{\rev{Context / full ratio}} & \rev{25.8$\times$} & \rev{30.7$\times$} & \rev{1.4$\times$} & \rev{26.0$\times$} \\
     \bottomrule
   \end{tabular}
 \end{table}
+
+\rev{
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figures/fig7_universe_aware.pdf}
+  \caption{Universe-aware view of the apparent calibration uplift.
+  (a) Denominator-invariant enrichment over random as a function of rank depth in each universe: the genuine signal is weak (near or below $1\times$ over most of the ranking) and concentrated in coarse posterior-tie blocks.
+  (b) Decomposition of the raw context/full precision@5000 ratio into a base-rate (denominator) factor of $25.8\times$ and a genuine-signal factor of $\approx1.4\times$.}
+  \label{fig:univ}
+\end{figure}
+}
 
 \subsection{Dual-Universe Governance Restricts Promotion to 0.2\% of Candidates}\label{sec:res-governance}
 
@@ -303,9 +441,35 @@ This substantial disagreement between evaluation contexts is precisely why dual-
   \includegraphics[width=\textwidth]{figures/fig3_governance.pdf}
   \caption{(a) Number of edges assigned to each governance tier (log scale).
   The vast majority of candidate edges fall in the Exploratory tier.
-  (b) Promotion eligibility: only Strong and Moderate tiers are eligible for promotion.}
+  (b) Perturbation enrichment by tier: Strong and Moderate edges exceed the 1.5$\times$ endpoint threshold, while Conditional and Exploratory edges fall near or below random expectation.}
   \label{fig:governance}
 \end{figure}
+
+\rev{
+Because promotion merges the Strong (500 edges) and Moderate (342 edges) tiers, we report their validation profiles separately (\Cref{tab:strongmod}) so that downstream users can judge the risk/return of each. The Strong tier is both more diverse (58 unique TFs versus 21) and more strongly supported by the genuinely external ChIP-seq references (\Cref{sec:res-external}): its enrichment on the strict ENETS2 sequence-specific set is $2.12\times$ ($p=2.0\times10^{-8}$), whereas the Moderate tier reaches only $1.32\times$ ($p=0.075$, not significant) and is more concentrated (top-2 TF fraction $0.73$ versus $0.50$). On the permissive ENCODE TFBS set both tiers are comparable ($1.79\times$ versus $1.74\times$, both $p<10^{-40}$). The Moderate tier therefore extends coverage rather than diversity, and its inclusion should be viewed as a recall-oriented, lower-specificity extension of the promoted set.
+}
+
+\rev{
+\begin{table}[t]
+  \centering
+  \caption{\rev{Distinct validation profile of the Strong and Moderate promoted tiers. External enrichments are computed against genuinely external ChIP-seq references (\Cref{sec:res-external}) on the ENCODE-evaluable candidate subspace.}}
+  \label{tab:strongmod}
+  \small
+  \begin{tabular}{@{}lccccc@{}}
+    \toprule
+    Tier & Edges & Unique TFs & Top-2 TF frac. & ENCODE enr. & ENETS2 (strict) enr. \\
+    \midrule
+    Strong   & 500 & 58 & 0.50 & 1.79$\times$ ($p{<}10^{-62}$) & 2.12$\times$ ($p{=}2.0{\times}10^{-8}$) \\
+    Moderate & 342 & 21 & 0.73 & 1.74$\times$ ($p{<}10^{-40}$) & 1.32$\times$ ($p{=}0.075$) \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+}
+
+\rev{
+\paragraph{Cutoff sensitivity.}
+The tier rank budgets $(k_1,k_2,k_3)=(500,5000,20000)$ are heuristic. Rescaling all three simultaneously by $\pm10\%$ leaves the promoted pool and its conclusions essentially unchanged: the promoted count moves only from 842 to 834 (at $\times0.9$) or 849 (at $\times1.1$), the top-1 and top-2 TF fractions shift by $<0.7$ percentage points, and the external ENCODE enrichment is invariant to three significant figures ($1.768\times$ at $\times1.0$ versus $1.768\times$ and $1.760\times$ at $\times0.9$ and $\times1.1$; all $p<10^{-102}$). The governance conclusions are therefore not artifacts of the exact cutoff values.
+}
 
 \subsection{Source Concentration Is High but Partially Controllable}\label{sec:res-concentration}
 
@@ -341,10 +505,73 @@ However, the relationship between deconcentration and validation performance is 
   \end{tabular}
 \end{table}
 
-\subsection{Pre-registered External Enrichment Is Strong}\label{sec:res-external}
+\rev{
+\paragraph{Automated operating-point selection.}
+The budget-dependence above means no single hand-picked promotion budget is obviously correct. We therefore select the operating point automatically. Over a grid of promotion budgets and source penalties $(\text{budget},\alpha)$, we measure source diversity as the Pielou evenness $J=H/\ln n$ of the promoted-TF distribution ($H$ = Shannon entropy) and validation precision as the enrichment against the external ENCODE reference, then choose the point maximizing the harmonic mean of the two min--max-normalized criteria (a diversity--precision $F$-score; the knee of the frontier gives an identical choice). The selected point is a budget of 200 edges at $\alpha=0.05$ (\Cref{fig:frontier}): it cuts the top-1 TF fraction from $0.32$ to $0.06$ and raises evenness from $0.31$ to $0.70$ while \emph{preserving} external enrichment ($1.79\times$, $p=1.5\times10^{-20}$, versus $1.77\times$ at the fixed 842-edge budget). Crucially, the external enrichment is essentially flat ($1.6$--$1.8\times$) across the entire grid: against a dense external reference, deconcentration carries no precision penalty. The apparent penalty in \Cref{tab:deconcentration} is specific to the sparse perturbation panels, where the promoted set intersects only a handful of reference edges and the hit count is dominated by sampling noise.
 
-Under a manifest-locked external protocol that freezes all policy-search parameters before evaluation, the promoted edge set at budget 4,000 achieves enrichment of $2.21\times$ over candidate-space random expectation ($p = 4.15 \times 10^{-86}$) on reserved external panels.
-Structural score calibration (introduced during hardening) raises full-universe metrics to precision@5000 = 0.037 and best F1 = 0.117, confirming that the framework's conservative governance does not sacrifice detectable biological signal.
+\paragraph{Functional characterization.}
+Enrichment analysis of the promoted target genes~\citep{kuleshov2016enrichr} (\Cref{tab:function}) shows that the promoted set is dominated by generic transcriptional-regulation terms and by mitogen/stress and cell-cycle hub programs (TNF-$\alpha$/NF-$\kappa$B signaling, E2F targets, G2--M checkpoint, mTORC1; KEGG cell cycle and cellular senescence). This confirms that dual-universe governance preferentially promotes densely annotated master-regulator hubs, a direct consequence of curation bias in the reference databases. However, the framework is not \emph{structurally} confined to housekeeping hubs: removing the three dominant hubs (EGR1, ETS1, E2F4) and re-running enrichment on the residual ``peripheral'' targets surfaces context-appropriate immune programs for these immune-tissue cohorts---interferon-$\gamma$ response, cytokine-mediated signaling, and allograft rejection (all adjusted $p<10^{-3}$)---indicating that peripheral promoted edges do carry cell-type-relevant signal, albeit at lower confidence than the hubs.
+
+\begin{table}[t]
+  \centering
+  \caption{\rev{Top functional enrichment (Enrichr; adjusted $p$) of promoted target genes, for the full promoted set and for the ``peripheral'' set obtained after removing the three dominant hub TFs. The full set is hub/stress-dominated; the peripheral set surfaces immune-context-specific programs.}}
+  \label{tab:function}
+  \small
+  \begin{tabular}{@{}llc@{}}
+    \toprule
+    Gene set & Representative enriched program & Adj.\ $p$ \\
+    \midrule
+    Promoted (all, 600 genes)   & TNF-$\alpha$ signaling via NF-$\kappa$B (Hallmark) & $3.9\times10^{-20}$ \\
+                                & E2F targets (Hallmark)                             & $1.7\times10^{-19}$ \\
+                                & Cell cycle (KEGG)                                  & $7.5\times10^{-11}$ \\
+    \midrule
+    Peripheral (89 genes)       & Interferon-$\gamma$ response (Hallmark)            & $2.4\times10^{-7}$ \\
+                                & Cytokine-mediated signaling (GO:BP)                & $1.6\times10^{-4}$ \\
+                                & Allograft rejection (Hallmark)                     & $1.8\times10^{-4}$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.72\textwidth]{figures/fig8_deconcentration_frontier.pdf}
+  \caption{\rev{Diversity--precision frontier of promoted edges over the $(\text{budget},\alpha)$ grid. Each point is an operating policy, colored by budget; the $y$-axis is enrichment against the external ENCODE reference and the $x$-axis is source evenness. External precision is nearly flat across the grid, so the automatically selected point (star: budget 200, $\alpha=0.05$) achieves far higher diversity than the fixed 842-edge budget (diamond) at no precision cost.}}
+  \label{fig:frontier}
+\end{figure}
+}
+
+\subsection{External Validation Against Perturbation and ChIP-seq References}\label{sec:res-external}
+
+Under a manifest-locked external protocol that freezes all policy-search parameters before evaluation, the promoted edge set at budget 4,000 achieves enrichment of $2.21\times$ over candidate-space random expectation ($p = 4.15 \times 10^{-86}$) on reserved perturbation panels.
+This enrichment is a denominator-invariant lift over random (\Cref{eq:enrichment}) and is therefore not subject to the base-rate confound of \Cref{sec:res-calibration}.
+Structural score calibration raises full-universe metrics to precision@5000 = 0.037 and best F1 = 0.117, confirming that the framework's conservative governance does not sacrifice detectable biological signal.
+
+\rev{
+\paragraph{A genuinely external ChIP-seq reference.}
+All references used inside the credibility model are curated interaction or perturbation resources. To test the promoted set against evidence of an entirely different modality that never enters the fusion, we use the ENCODE TFBS ChIP-seq clustered network (5-cell-line union; 184 assayed TFs, $1.5\times10^6$ TF--target edges)~\citep{encode2012integrated} and, as a stricter companion, the ENCODE ENETS2 sequence-specific network (90 TFs). Neither is a source, family, or panel anywhere in the pipeline. We restrict the candidate space to edges whose TF is assayed in the external set (universe-aware: 16{,}852 edges for ENCODE, base rate $47.4\%$; 16{,}239 for ENETS2, base rate $6.6\%$) and compute the enrichment of each governance tier over that base rate, with hypergeometric significance.
+
+The results (\Cref{tab:external}) show a clean, monotone separation across tiers on both references. The promoted (Strong$+$Moderate) pool is enriched $1.77\times$ on ENCODE ($658/785$ edges confirmed; $p=2.3\times10^{-104}$) and $1.77\times$ on the strict ENETS2 set ($p=6.2\times10^{-8}$); the Strong tier reaches $2.12\times$ on the strict set. Enrichment declines monotonically to the Conditional tier ($1.17\times$/$1.04\times$) and falls below random for the Exploratory tier ($0.89\times$/$0.93\times$), exactly as the governance ordering predicts. This external, cross-modality agreement is the strongest single piece of evidence that the promoted set reflects genuine regulatory structure rather than curation artifacts of the internal references.
+
+\begin{table}[t]
+  \centering
+  \caption{\rev{Enrichment of governance tiers against two genuinely external ChIP-seq references never used in the credibility model, over the ENCODE-evaluable candidate subspace. Enrichment is the tier precision divided by the candidate-space base rate; $p$ is the hypergeometric upper-tail probability.}}
+  \label{tab:external}
+  \small
+  \begin{tabular}{@{}lcccc@{}}
+    \toprule
+     & \multicolumn{2}{c}{ENCODE TFBS (permissive)} & \multicolumn{2}{c}{ENETS2 seq-specific (strict)} \\
+    \cmidrule(lr){2-3}\cmidrule(lr){4-5}
+    Tier & Enrichment & $p$ & Enrichment & $p$ \\
+    \midrule
+    Strong                    & 1.79$\times$ & $5\times10^{-63}$  & 2.12$\times$ & $2.0\times10^{-8}$ \\
+    Moderate                  & 1.74$\times$ & $4\times10^{-41}$  & 1.32$\times$ & $0.075$ \\
+    \textbf{Promoted (S+M)}   & \textbf{1.77$\times$} & $\mathbf{2\times10^{-104}}$ & \textbf{1.77$\times$} & $\mathbf{6\times10^{-8}}$ \\
+    Conditional               & 1.17$\times$ & $1\times10^{-32}$  & 1.04$\times$ & $0.22$ \\
+    Exploratory               & 0.89$\times$ & $1.00$             & 0.93$\times$ & $1.00$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+}
 
 \subsection{Leave-One-Cohort-Out Replication: 5/6 Pass with Support-Stratified Reliability}\label{sec:res-replication}
 
@@ -388,27 +615,27 @@ Even when half of all cohorts are removed per run (L3O), high-support cohort tie
 
 The central finding of this work is that the standard single-reference evaluation paradigm for GRN benchmarking systematically misrepresents the reliability of predicted regulatory edges, and that a multi-reference latent truth framework can provide substantially more calibrated and honest assessments of predictive quality.
 
-The 23--31$\times$ calibration uplift from context conditioning is perhaps the most practically important result, because it implies that many previous benchmarking studies may have underestimated the biological content of foundation model predictions by evaluating against references in contexts where overlap is inherently sparse.
-This does not mean that the models are better than previously thought in an absolute sense; rather, it means that evaluation methodology has been a confound, and that context-matched evaluation is necessary for meaningful comparisons.
+\rev{The most important methodological lesson concerns how \emph{not} to read the $23$--$31\times$ gap between the context-matched and full universes. That gap is real for raw precision, but our decomposition (\Cref{sec:res-calibration}) shows it is almost entirely a base-rate artifact: the context universe simply has a $25.8\times$ higher density of evaluable references, and once metrics are normalized to a denominator-invariant enrichment the genuine ranking difference between contexts is only $\approx1.4\times$. Reporting the raw ratio as a ``calibration uplift'' would therefore overstate what context matching buys, in the same way that restricting the candidate set inflates precision metrics without improving the underlying predictions~\citep{kendiukhov2025universe}. The constructive takeaway is not that context matching makes the model better, but that cross-universe precision comparisons are not meaningful and that promotion and validation must rest on denominator-invariant enrichment---which is what the governance layer does, and why the promoted set nonetheless shows a genuine $\approx1.8$--$2.2\times$ enrichment against both held-out perturbation panels and an external ChIP-seq reference.}
 
 The dual-universe governance framework addresses a different problem: how to translate continuous credibility scores into discrete, defensible claims about which predicted regulatory edges are trustworthy enough to report.
 The extreme conservatism of the framework (promoting only 0.2\% of candidates) is intentional.
 In a field where benchmark inflation and overconfident claims are persistent concerns~\citep{pratapa2020benchmarking}, we argue that explicit governance policies with traceable promotion criteria are preferable to arbitrary score thresholds, even if they result in smaller claim sets.
 
-The source concentration issue (top-2 TFs accounting for $\sim$59\% of promoted edges) reflects a genuine property of the underlying data rather than a methodological artifact: some TFs have much denser reference coverage and therefore accumulate more evidence.
-The deconcentration analysis shows that this concentration is partially policy-adjustable, but the budget-dependence of the tradeoff means that no single deconcentration setting is universally optimal.
+The source concentration issue (top-2 TFs accounting for $\sim$59\% of promoted edges) reflects a genuine property of the underlying data rather than a methodological artifact: some TFs have much denser reference coverage and therefore accumulate more evidence, and the functional analysis confirms that the promoted set is dominated by densely annotated master-regulator hub and stress programs.
+\rev{Two findings temper this. First, an automated diversity--precision criterion (\Cref{sec:res-concentration}) removes the need for a hand-picked budget and recovers a far more even promoted set (top-1 TF fraction $0.32\rightarrow0.06$) at no cost in external-reference precision, because enrichment against a dense external reference is essentially flat across the operating grid. Second, the residual peripheral edges do carry cell-type-appropriate signal (interferon-$\gamma$, cytokine, and allograft-rejection programs for these immune cohorts). We nonetheless state the corresponding limitation plainly: the framework cannot \emph{confirm} weakened, context-specific peripheral pathways using the sparse perturbation panels, where forcing diversity collapses the already tiny validated-hit counts (\Cref{tab:deconcentration}); such peripheral promotions should be treated as lower-confidence hypotheses that require denser or bespoke perturbation validation.}
 
 The LOCO replication results provide both reassurance and a concrete limitation.
 The 5/6 pass rate with strong enrichment in passing cohorts suggests that the framework captures genuine biological signal.
-The single failure, cleanly attributable to sparse reference support rather than model collapse, provides a practical reliability criterion: users should verify that their evaluation context has sufficient perturbation reference coverage before interpreting negative results as evidence against model quality.
+The single failure, cleanly attributable to sparse reference support rather than model collapse, suggests a practical reliability criterion: users should verify that their evaluation context has sufficient perturbation reference coverage before interpreting negative results as evidence against model quality.
+\rev{We deliberately state this as an exploratory rather than an established threshold. With only six cohorts---four above and two below the ten-edge support line---the pass rate carries a wide Wilson interval ([0.44, 0.97]), the support cutoff is estimated from a handful of points, and the cohort-level Bayesian model can support only minimal covariate structure. The support-density criterion should therefore be read as a hypothesis to be re-estimated on a larger cohort panel, not as a calibrated operating boundary.}
 
 \paragraph{Limitations.}
 Five limitations constrain the current work.
 First, all analyses are conducted on scGPT embeddings from immune tissue cohorts; generalization to other models (e.g., Geneformer) and other tissue contexts remains to be tested.
-Second, perturbation overlap in the full universe is sparse (514 out of 421,521 edges), limiting direct external validation power.
-Third, the dual-governance thresholds are rule-based rather than learned, and the ordinal alignment procedure should be validated prospectively on independent cohorts.
-Fourth, cohort-level Bayesian modeling operates on only six cohorts, supporting limited covariate structure.
-Fifth, all references used in this study are internal project artifacts; independent external replication against newly curated references would strengthen the claims.
+Second, perturbation overlap in the full universe is sparse (514 out of 421,521 edges), limiting direct perturbation-validation power; \rev{this sparsity is also why we add a dense external ChIP-seq anchor (\Cref{sec:res-external}) and why small-budget perturbation precision estimates are noisy.}
+Third, the dual-governance thresholds are rule-based rather than learned; \rev{we now report their exact values and a $\pm10\%$ sensitivity analysis (\Cref{sec:res-governance}), but the ordinal alignment procedure should still be validated prospectively on independent cohorts.}
+Fourth, cohort-level Bayesian modeling operates on only six cohorts, supporting limited covariate structure, \rev{so all cohort-level conclusions---including the support-density reliability threshold---are exploratory and require a larger cohort panel for confirmation.}
+\rev{Fifth, the references used \emph{inside} the credibility model are curated interaction and perturbation resources; we mitigate the resulting circularity by validating the promoted set against an external ChIP-seq reference (ENCODE) that is not part of the fusion, but replication against additional independently curated references in non-immune contexts would strengthen the claims further.}
 
 % ======================================================================
 % 7. CONCLUSION
@@ -416,23 +643,47 @@ Fifth, all references used in this study are internal project artifacts; indepen
 \section{Conclusion}\label{sec:conclusion}
 
 We have presented a multi-reference latent truth framework for GRN benchmarking that replaces the single-reference evaluation paradigm with explicit probabilistic credibility modeling under source dependence.
-The hierarchical Family-Bayes estimator achieves the highest robustness under structured stress tests, context-conditioned evaluation reveals an order-of-magnitude calibration improvement over na\"ive full-universe metrics, and a four-tier dual-universe governance policy provides traceable, conservative claim promotion.
-Pre-registered replication across six perturbation cohorts confirms that the framework captures genuine biological signal while exposing a support-dependent reliability boundary.
+The hierarchical Family-Bayes estimator achieves the highest robustness under structured stress tests, \rev{a universe-aware decomposition shows that the large apparent gap between full- and context-universe precision is a base-rate artifact and that denominator-invariant enrichment is the correct cross-universe quantity}, and a four-tier dual-universe governance policy provides traceable, conservative claim promotion.
+\rev{Pre-registered replication across six perturbation cohorts, together with validation against a genuinely external ChIP-seq reference, indicates that the promoted set captures genuine biological signal ($\approx1.8$--$2.2\times$ enrichment), while the small cohort count means the support-dependent reliability boundary should be treated as exploratory.}
 
 The framework is lightweight (all analyses run on a laptop without GPU), reproducible (all artifacts are checksum-manifested), and intentionally conservative, prioritizing calibrated uncertainty over inflated claims.
 We hope it contributes to more honest and context-aware evaluation practices in the rapidly growing field of mechanistic interpretability for single-cell foundation models.
 
 % ======================================================================
+% DATA AND CODE AVAILABILITY
+% ======================================================================
+\section*{Data and Code Availability}
+
+All source code, analysis pipelines, and summary data tables required to reproduce the results and figures in this paper are publicly available at \url{https://github.com/Biodyn-AI/multireference-latent-truth}.
+The repository includes model fitting scripts, robustness stress protocols, governance enforcement, replication analyses, and figure generation code.
+All model fitting is CPU-only and requires only standard scientific Python packages (numpy, scipy, pandas, matplotlib).
+
+% ======================================================================
+% ACKNOWLEDGMENTS
+% ======================================================================
+\section*{Acknowledgments}
+
+The author thanks the open-source communities behind scGPT, DoRothEA, TRRUST, ENCODE, Enrichr, and the Perturb-seq datasets that made this analysis possible.
+
+% ======================================================================
 % REFERENCES
 % ======================================================================
-\bibliographystyle{plainnat}
-
-\begin{thebibliography}{20}
+\begin{thebibliography}{25}
 
 \bibitem[Adamson et~al.(2016)]{adamson2016multiplexed}
 Adamson, B., Norman, T.~M., Jost, M., et~al.
 \newblock A multiplexed single-cell {CRISPR} screening platform enables systematic dissection of the unfolded protein response.
 \newblock \emph{Cell}, 167(7):1867--1882, 2016.
+
+\bibitem[Aibar et~al.(2017)]{aibar2017scenic}
+Aibar, S., Gonz{\'a}lez-Blas, C.~B., Moerman, T., et~al.
+\newblock {SCENIC}: Single-cell regulatory network inference and clustering.
+\newblock \emph{Nature Methods}, 14(11):1083--1086, 2017.
+
+\bibitem[Bravo Gonz{\'a}lez-Blas et~al.(2023)]{bravo2023scenic}
+Bravo Gonz{\'a}lez-Blas, C., De~Winter, S., Hulselmans, G., et~al.
+\newblock {SCENIC+}: Single-cell multiomic inference of enhancers and gene regulatory networks.
+\newblock \emph{Nature Methods}, 20(9):1355--1367, 2023.
 
 \bibitem[Cui et~al.(2024)]{cui2024scgpt}
 Cui, H., Wang, C., Maan, H., et~al.
@@ -443,6 +694,11 @@ Cui, H., Wang, C., Maan, H., et~al.
 Dawid, A.~P. and Skene, A.~M.
 \newblock Maximum likelihood estimation of observer error-rates using the {EM} algorithm.
 \newblock \emph{Journal of the Royal Statistical Society: Series C}, 28(1):20--28, 1979.
+
+\bibitem[ENCODE Project Consortium(2012)]{encode2012integrated}
+The {ENCODE} Project Consortium.
+\newblock An integrated encyclopedia of {DNA} elements in the human genome.
+\newblock \emph{Nature}, 489(7414):57--74, 2012.
 
 \bibitem[Dixit et~al.(2016)]{dixit2016perturb}
 Dixit, A., Parnas, O., Li, B., et~al.
@@ -469,30 +725,51 @@ Huynh-Thu, V.~A., Irrthum, A., Wehenkel, L., and Geurts, P.
 \newblock Inferring regulatory networks from expression data using tree-based methods.
 \newblock \emph{PLOS ONE}, 5(9):e12776, 2010.
 
-\bibitem[Kendiukhov et~al.(2026a)]{kendiukhov2026causal}
-Kendiukhov, I., et~al.
-\newblock Causal intervention for single-cell mechanistic interpretability.
-\newblock Under review at \emph{JMLR}, 2026.
+\bibitem[Jackson et~al.(2020)]{jackson2020gene}
+Jackson, C.~A., Castro, D.~M., Saldi, G.-A., Bonneau, R., and Bhatt, D.
+\newblock Gene regulatory network reconstruction using single-cell {RNA} sequencing of barcoded genotypes in diverse environments.
+\newblock \emph{eLife}, 9:e51254, 2020.
 
-\bibitem[Kendiukhov et~al.(2026b)]{kendiukhov2026evalbias}
-Kendiukhov, I., et~al.
-\newblock Evaluation bias and symbol mapping in {GRN} benchmarks.
-\newblock Under review at \emph{IEEE/ACM TCBB}, 2026.
+\bibitem[Kamimoto et~al.(2023)]{kamimoto2023dissecting}
+Kamimoto, K., Hoffmann, C.~M., and Morris, S.~A.
+\newblock {CellOracle}: Dissecting cell identity via network inference and \emph{in silico} gene perturbation.
+\newblock \emph{Nature}, 614:742--751, 2023.
 
-\bibitem[Kendiukhov et~al.(2026c)]{kendiukhov2026ranking}
-Kendiukhov, I., et~al.
-\newblock Ranking reversal theory under candidate-set shift in {GRN} benchmarking.
-\newblock Under review at \emph{TMLR}, 2026.
+\bibitem[Kendiukhov(2026)]{kendiukhov2025universe}
+Kendiukhov, I.
+\newblock Evaluation protocol choices dominate reported performance in gene regulatory network benchmarks for single-cell foundation models.
+\newblock \emph{Research Square preprint}, 2026.
+\newblock doi:10.21203/rs.3.rs-9283852/v1.
 
 \bibitem[Moerman et~al.(2019)]{moerman2019grnboost2}
 Moerman, T., Santos, S.~A., Gonz{\'a}lez-Blas, C.~B., et~al.
 \newblock {GRNBoost2} and {Arboreto}: Efficient and scalable inference of gene regulatory networks.
 \newblock \emph{Bioinformatics}, 35(12):2159--2161, 2019.
 
+\bibitem[Kuleshov et~al.(2016)]{kuleshov2016enrichr}
+Kuleshov, M.~V., Jones, M.~R., Rouillard, A.~D., et~al.
+\newblock {Enrichr}: A comprehensive gene set enrichment analysis web server 2016 update.
+\newblock \emph{Nucleic Acids Research}, 44(W1):W90--W97, 2016.
+
 \bibitem[Pratapa et~al.(2020)]{pratapa2020benchmarking}
 Pratapa, A., Jalihal, A.~P., Law, J.~N., Bharadwaj, A., and Murali, T.~M.
 \newblock Benchmarking algorithms for gene regulatory network inference from single-cell transcriptomic data.
 \newblock \emph{Nature Methods}, 17(2):147--154, 2020.
+
+\bibitem[Raykar et~al.(2010)]{raykar2010learning}
+Raykar, V.~C., Yu, S., Zhao, L.~H., et~al.
+\newblock Learning from crowds.
+\newblock \emph{Journal of Machine Learning Research}, 11:1297--1322, 2010.
+
+\bibitem[Replogle et~al.(2022)]{replogle2022mapping}
+Replogle, J.~M., Saunders, R.~A., Pogson, A.~N., et~al.
+\newblock Mapping information-rich genotype-phenotype landscapes with genome-scale {Perturb-seq}.
+\newblock \emph{Cell}, 185(14):2559--2575, 2022.
+
+\bibitem[Schiebinger et~al.(2019)]{schiebinger2019optimal}
+Schiebinger, G., Shu, J., Tabaka, M., et~al.
+\newblock Optimal-transport analysis of single-cell gene expression identifies developmental trajectories in reprogramming.
+\newblock \emph{Cell}, 176(4):928--943, 2019.
 
 \bibitem[Theodoris et~al.(2023)]{theodoris2023transfer}
 Theodoris, C.~V., Xiao, L., Chopra, A., et~al.
@@ -503,6 +780,11 @@ Theodoris, C.~V., Xiao, L., Chopra, A., et~al.
 Tseng, G.~C., Ghosh, D., and Feingold, E.
 \newblock Comprehensive literature review and statistical considerations for microarray meta-analysis.
 \newblock \emph{Nucleic Acids Research}, 40(9):3785--3799, 2012.
+
+\bibitem[Zheng et~al.(2017)]{zheng2017massively}
+Zheng, G.~X.~Y., Terry, J.~M., Belgrader, P., et~al.
+\newblock Massively parallel digital transcriptional profiling of single cells.
+\newblock \emph{Nature Communications}, 8:14049, 2017.
 
 \end{thebibliography}
 

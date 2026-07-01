@@ -6,13 +6,19 @@ A framework for estimating per-edge regulatory credibility from multiple noisy r
 
 **Author**: Ihor Kendiukhov, University of Tübingen
 
+**Repository**: [https://github.com/Biodyn-AI/multireference-latent-truth](https://github.com/Biodyn-AI/multireference-latent-truth)
+
+**Target venue**: Statistical Applications in Genetics and Molecular Biology (SAGMB), De Gruyter
+
 
 ## Key Results
 
 - **Hierarchical Family-Bayes** achieves lowest rank disagreement under both source-dropout and family-block-dropout stress protocols (0.067-0.072 mean disagreement vs. 0.104-0.139 for alternatives).
-- **Context conditioning** produces a 23-31x calibration uplift over naïve full-universe evaluation, demonstrating that context matching is critical for meaningful GRN benchmarking.
-- **Dual-universe governance** restricts promotion to 842 out of 421,521 candidate edges (0.2%), with 2.2x perturbation-backed enrichment (p << 0.05) on pre-registered external panels.
-- **LOCO replication** across 6 perturbation cohorts yields a 5/6 pass rate, with the single failure cleanly attributable to sparse reference support (<10 edges), providing an operational reliability threshold.
+- **Universe-aware evaluation.** The large raw precision/F1 gap between the context-matched and full universes (23-31x) is shown, by explicit decomposition, to be almost entirely a base-rate (denominator) effect: the context universe has a 25.8x higher reference density, and the genuine denominator-invariant ranking difference is only ~1.4x. All promotion/validation decisions use denominator-invariant enrichment over random.
+- **Dual-universe governance** restricts promotion to 842 out of 421,521 candidate edges (0.2%), with 2.2x denominator-invariant perturbation-backed enrichment (p << 0.05) on pre-registered panels.
+- **Genuinely external validation.** The promoted set is enriched 1.77x-2.12x (p < 1e-7) against an external ENCODE ChIP-seq reference that is not used anywhere in the credibility model, with a clean monotone separation across governance tiers.
+- **Governance is well-specified and robust:** exact rank-based tier cutoffs, a +-10% cutoff sensitivity analysis (promoted pool 834-849), a distinct Strong-vs-Moderate breakdown, an automated diversity-precision operating-point selector, and a functional/pathway characterization of the promoted set.
+- **LOCO replication** across 6 perturbation cohorts yields a 5/6 pass rate; given the small cohort count this is reported as an exploratory support-density reliability threshold.
 
 
 ## Repository Structure
@@ -38,6 +44,9 @@ A framework for estimating per-edge regulatory credibility from multiple noisy r
 │   ├── replication/            # LOCO, L2O, L3O, blind holdout protocols
 │   ├── endpoint_modeling/      # Bayesian endpoint tiering (5 model variants)
 │   ├── sensitivity/            # Prior sensitivity, fragility analysis
+│   ├── revision/               # Universe-aware decomposition, external ENCODE
+│   │                           #   validation, tier-cutoff sensitivity, tier
+│   │                           #   breakdown, functional enrichment, auto-deconcentration
 │   ├── tuning/                 # Family-HB hyperparameter tuning
 │   ├── packaging/              # Table/figure generation, submission bundle builders
 │   ├── utils/                  # Shared utilities (ltm_utils.py, source_catalog.json)
@@ -66,13 +75,13 @@ A framework for estimating per-edge regulatory credibility from multiple noisy r
 | Paper Section | Key Scripts | Key Data |
 |---|---|---|
 | §5.1 Robustness comparison | `src/robustness/run_source_dropout_ablation.py`, `run_family_block_dropout_ablation.py` | `data/paper_tables/robustness_progression_summary.csv` |
-| §5.2 Context conditioning | `src/evaluation/build_context_matched_universe.py`, `calibrate_perturbation_claim_tiers.py` | `data/paper_tables/calibration_full_vs_context.csv` |
-| §5.3 Governance tiers | `src/governance/enforce_dual_universe_claim_governance.py` | `data/paper_tables/dual_universe_claim_tiers_summary.csv` |
-| §5.4 Source concentration | `src/governance/run_deconcentration_policy_sweep.py`, `run_deconcentration_budget_sensitivity.py` | `data/paper_tables/deconcentration_*.csv` |
-| §5.5 External enrichment | `src/replication/run_preregistered_external_validation.py` | `outputs/top_tier_readiness_v*/` |
+| §5.2 Context conditioning / universe-aware decomposition | `src/evaluation/build_context_matched_universe.py`, `src/revision/universe_aware_decomposition.py` | `data/paper_tables/calibration_full_vs_context.csv`, `rev_universe_aware_*.csv`, `rev_enrichment_vs_depth.csv` |
+| §5.3 Governance tiers + cutoff sensitivity + Strong/Moderate breakdown | `src/governance/enforce_dual_universe_claim_governance.py`, `src/revision/tier_cutoff_sensitivity.py`, `src/revision/tier_breakdown.py` | `data/paper_tables/dual_universe_claim_tiers_summary.csv`, `rev_tier_cutoff_sensitivity.csv`, `rev_strong_vs_moderate_breakdown.csv` |
+| §5.4 Source concentration + functional enrichment + auto-deconcentration | `src/governance/run_deconcentration_policy_sweep.py`, `src/revision/functional_enrichment.py`, `src/revision/auto_deconcentration.py` | `data/paper_tables/deconcentration_*.csv`, `rev_functional_enrichment.csv`, `rev_deconcentration_autotune_*.csv` |
+| §5.5 External validation (perturbation + ENCODE ChIP-seq) | `src/replication/run_preregistered_external_validation.py`, `src/revision/external_encode_validation.py` | `outputs/top_tier_readiness_v*/`, `data/paper_tables/rev_external_encode_enrichment.csv` |
 | §5.6 LOCO replication | `src/replication/run_multilevel_leave_one_cohort_out.py` | `outputs/top_tier_readiness_v7/multilevel_leave_one_cohort_out_v1/` |
 | §5.7 Cohort fragility | `src/replication/run_multilevel_leave_two_cohort_out.py`, `run_multilevel_leave_three_cohort_out.py` | `outputs/top_tier_readiness_v7/multilevel_leave_*_cohort_out_v1/` |
-| Figures 1-6 | `paper/generate_figures.py` | `data/paper_tables/*.csv` |
+| Figures 1-8 | `paper/generate_figures.py`, `src/revision/make_revision_figures.py` | `data/paper_tables/*.csv`, `outputs/revision/*.csv` |
 
 
 ## Reproducing the Paper Figures
@@ -115,4 +124,5 @@ If you use this framework, please cite the paper:
 ```
 Kendiukhov, I. (2026). Latent Truth Without a Gold Standard: Multi-Reference
 Credibility Modeling and Claim Governance for Gene-Regulatory-Network Benchmarking.
+Statistical Applications in Genetics and Molecular Biology (under review).
 ```
