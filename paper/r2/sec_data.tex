@@ -1,0 +1,72 @@
+\section{Data}\label{sec:data}
+
+\Cref{fig:design} summarises the design: the evidence that enters the model, the held-out evidence that judges it, and the universes in which both are used.
+
+\subsection{Candidate universes}\label{sec:data-universes}
+\paragraph{Tissue-context universes.}
+We analyse three tissues of the Tabula Sapiens atlas~\citep{tabula2022}: an immune subset (\nTsCellsImm{} cells), kidney (\nTsCellsKid{} cells, \nTsDonorsKid{} donor) and lung (\nTsCellsLung{} cells).
+For each tissue $t$, the \emph{panel} is the set of genes that both foundation models can score: genes present in the scGPT attention matrix (the 5{,}000 most variable genes intersected with the scGPT vocabulary) and in the Geneformer attention matrix, after normalisation to approved HGNC symbols~\citep{seal2023hgnc}.
+The \emph{tissue-context universe} $\mathcal{U}_{\mathrm{ctx}}(t)$ consists of all ordered pairs of a panel gene that is a human TF according to \citet{lambert2018human} and a different panel gene (\Cref{tab:universes}).
+Its definition uses expression data and model vocabularies only.
+
+\paragraph{Global universe.}
+The \emph{global universe} $\mathcal{U}_{\mathrm{glob}}$ contains every TF covered by at least one held-in literature annotator (\nGlobTfs{} TFs) paired with every gene that is a target in at least one held-in literature annotator or belongs to one of the three panels (\nGlobGenes{} genes): \nGlobEdges{} ordered pairs.
+It is the universe in which the estimators are compared, because it contains most TFs assayed by the held-out references; every context edge whose TF is covered by a literature annotator is also a global edge with the same observation pattern.
+Neither universe is defined with reference to any validation resource.
+
+\paragraph{Method scores.}
+For every context edge we record the following scores (\Cref{tab:universes}).
+\emph{scGPT attention}: attention weights of the whole-human scGPT checkpoint, averaged over all layers and heads and over the cells in which both genes are input tokens (TF as query, target as key; the transposed direction is kept as a separate score), extracted from the first \nScgptCells{} cells of each processed tissue file. These cells are not a random sample: \nScgptSmartPctLung{}\% of them were profiled by Smart-seq2 in lung (from \nScgptDonorsLung{} donors), and \nScgptSmartPctImm{}\% and \nScgptSmartPctKid{}\% in immune and kidney, against at most \nOtherSmartPctMax{}\% of the randomly sampled cells used for Geneformer and the expression baselines. Smart-seq2 cells typically have more detected genes than droplet-based cells, so the selection may affect the attention results of \Cref{sec:res-governance}, which depend on the number of genes expressed per cell.
+\emph{Geneformer attention}: the same quantity for Geneformer V2-104M~\citep{chen2026geneformer}, extracted from a random sample of \nGfCellsImmLung{} (immune, lung) or \nGfCellsKid{} (kidney) cells.
+For both models we also compute the attention an edge would receive if every cell spread its attention uniformly over its $L$ input genes (the mean of $1/L$ over co-observing cells; ``uniform null''), and the ratio of observed to uniform attention (``normalised attention'').
+\emph{Expression baselines}: GRNBoost2~\citep{moerman2019grnboost2} with the panel TFs as regulators and, for the immune tissue, GENIE3~\citep{huynh2010inferring}, together with absolute Pearson and Spearman correlation, all computed on one random sample of \nExprCells{} cells per tissue; and a uniform random score.
+A method's \emph{predicted set} is its \nTopK{} highest-scoring targets per TF; pairs a method cannot score are not predicted, and ties at the \nTopK{}th position are broken by a fixed random key.
+Pairs co-observed in few cells dominate the attention rankings (over all pairs of a universe, scored or not, the median number of co-observing cells is \nCoobsScMin{} to \nCoobsScMax{} for scGPT and \nCoobsGfMax{} for Geneformer, and only \nCoobsFiveScPctMin{}--\nCoobsFiveScPctMax{}\% and \nCoobsFiveGfPctMin{}--\nCoobsFiveGfPctMax{}\% of the pairs are co-observed in at least \nFmMinCoobs{} cells), so we additionally report how attention rankings change when they are restricted to pairs co-observed in at least \nFmMinCoobs{} cells, and predicted sets of \nTopKSensLo{} and \nTopKSensHi{} targets per TF (Supplementary Table~\ref{tab:S-fm-sens}).
+
+\input{tables/tab_universes}
+
+\subsection{Evidence annotators}\label{sec:data-annotators}
+The evidence annotators are primary TF--target resources as integrated by DoRothEA~\citep{garcia2019benchmark} and CollecTRI~\citep{mullerdott2023collectri} and distributed with per-edge provenance by OmniPath~\citep{turei2021omnipath}, together with TRRUST~v2~\citep{han2018trrust}.
+Each edge record is assigned to the primary resource that reported it; the same resource reached through both integrators is merged; integrator-level confidence tags are not used as annotators.
+Resources are grouped by evidence modality into four families (\Cref{tab:sources}; the full list with versions or access dates, citations and URLs is given in Supplementary Table~\ref{tab:S-sources}, and the family-assignment criterion of every resource in the source table of the code repository):
+\emph{literature} (\nNAnnotLit{} annotators: curated and text-mined interactions~\citep{han2018trrust,vazquez2022extri,huang2019geredb,jiang2007tred,essaghir2010tfacts,bovolenta2012htridb,perfetto2016signor,chu2021curation,portales2009pazar,kanehisa2012kegg,carrascopro2018cytreg,orchard2014intact,huntley2015goa,lesurf2016oreganno,yusuf2012tfe,fantom2009transcriptional,kawaji2011fantom,gronostajski2011nfi}),
+\emph{motif} (HOCOMOCO~\citep{kulakovskiy2018hocomoco} and JASPAR~\citep{khan2018jaspar} binding-site scans),
+\emph{coexpression} (ARACNe~\citep{margolin2006reverse} regulons inferred from GTEx data), and
+\emph{ChIP} (ReMap~\citep{cheneby2018remap}, the high-throughput part of PAZAR~\citep{portales2009pazar}, and two ENCODE-derived sets~\citep{gerstein2012architecture}).
+The ChIP family is held out of every primary fit because the validation references are ChIP-seq data.
+All annotators are public resources; none was constructed from the candidate edges, from model outputs or from the validation data.
+
+\paragraph{Observation model.}
+OmniPath distributes DoRothEA confidence levels A to D only, and every such record has literature or ChIP support.
+Motif and coexpression records for edges without literature support therefore exist in our data only because a held-out ChIP resource also supports them.
+To keep held-out information out of the fit, the \emph{curated-conditional} observation model lets motif and coexpression annotators observe an edge only if the edge has held-in literature-curated support in DoRothEA; a literature annotator observes $(t,g)$ if it covers $t$ and $g$ occurs in it.
+A TF is covered by an annotator if the annotator has at least one record for it.
+Under this model \nGlobUnobsPct{}\% of the global universe is observed by no annotator and \nGlobReported{} edges carry at least one report; the \nGlobEdgesMio{} million edges collapse to \nGlobPatterns{} distinct observation patterns.
+Alternative observation models (motif and coexpression treated as genome-wide; both endpoints required to occur in the annotator), alternative literature panels (without nine very large regulons; without the four annotators that may contain ChIP-derived records; with the two most overlapping text-mining annotators merged; literature only) and a fit that includes the ChIP family are used as sensitivity analyses (\Cref{sec:res-sensitivity}).
+So are three alternative family definitions: integrator lineage (CollecTRI, DoRothEA, or both), every annotator its own family (which removes the burst classes and the pooling within families), and data-driven families obtained by average-linkage clustering of the annotators on one minus the phi coefficient of co-reporting among co-observed edges, cut into three clusters, the number of held-in modality families; the agreement of this clustering with the modality families is measured by the adjusted Rand index on the full data, over the cross-validation training folds and over bootstrap resamples of TFs (post hoc).
+
+\input{tables/tab_sources}
+
+\subsection{Held-out validation data}\label{sec:data-heldout}
+\paragraph{ChIP-seq references.}
+\emph{ENCODE TFBS} (transcription-factor binding sites): the gene-set library of ENCODE transcription-factor binding profiles distributed by Harmonizome~\citep{rouillard2016harmonizome,encode2012integrated}, restricted to the five main cell lines (union over cell lines and replicates; \nEncTfs{} TFs after restriction to \citet{lambert2018human} TFs). It is permissive: \nEncDensityPct{}\% of all TF--gene pairs are positives.
+\emph{ENCODE-strict}: the subset bound in at least \nEncStrictMinLines{} of the five cell lines, for TFs assayed in at least \nEncStrictMinLines{}.
+\emph{ENETS2} (named after its distribution file): the filtered proximal regulatory network of \citet{gerstein2012architecture} (\nEnetTfs{} TFs; \nEnetDensityPct{}\% of pairs positive), the specific reference.
+A TF is evaluable against a reference only if the reference assayed it, and a gene only if it belongs to the reference's gene universe (\Cref{tab:chip}).
+
+\paragraph{Perturbation cohorts.}
+\nCohNCap{} pooled CRISPR screens with single-cell readout from \nCohStudies{} studies provide perturbation evidence (\Cref{tab:cohorts}): \citet{dixit2016perturb} (two time points), \citet{adamson2016multiplexed}, \citet{shifrut2018genome}, \citet{norman2019exploring}, \citet{papalexi2021characterizing} and \citet{replogle2022mapping}, the first five as distributed by scPerturb~\citep{peidli2024scperturb} or with the original cell annotations.
+For each perturbed gene with at least \nDeMinCells{} cells we test every gene expressed in at least \nDeMinFracPct{}\% of perturbed or control cells for differential expression against the cohort's non-targeting controls (Welch $t$-test on log-normalised counts; Benjamini--Hochberg adjustment within perturbation~\citep{benjamini1995controlling}).
+For the two cohorts with replicate or donor-by-stimulation structure the test is stratified by that structure.
+For the genome-scale screen of \citet{replogle2022mapping} we use the published pseudobulk profiles and a normal approximation to the mean $z$-normalised expression.
+A pair (perturbed TF, gene) is a \emph{positive} if the adjusted $p<\nDeFdr{}$ and $|\log_2 \text{fold change}|>\nDeMinLfc{}$; pairs in which the gene lies in the same cytogenetic band as the perturbed TF are excluded from both positives and negatives because CRISPR interference and activation can act on neighbouring genes.
+Positives include indirect effects of the perturbation.
+The two Dixit time points are treated as one study; the Adamson screen perturbed no TF and is therefore not evaluable for TF--target edges.
+None of the cohorts enters any fit, universe definition or choice of the primary analysis; the tuning-optimism analysis of \Cref{sec:res-sensitivity} uses them only to measure what tuning on them would gain.
+
+\input{tables/tab_chip}
+\input{tables/tab_cohorts}
+
+\subsection{Software and hardware}\label{sec:data-compute}
+All statistical analyses were run with Python~\nPythonVersion{} (NumPy, SciPy, pandas, JAX and NumPyro) on an Apple M2~Pro laptop (\nHwCores{} cores, \nHwRamGiB{}~GiB RAM) without a GPU, starting from previously extracted attention matrices; the hardware and run time of the attention extraction were not recorded and are not part of the reported costs.
+Wall-clock time and peak memory per pipeline stage are reported in \Cref{sec:res-compute}.

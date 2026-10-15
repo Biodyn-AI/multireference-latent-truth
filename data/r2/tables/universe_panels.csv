@@ -1,0 +1,4 @@
+tissue,n_scgpt_genes,n_geneformer_genes,n_geneformer_matrix,n_panel,n_tfs,n_universe
+immune,4891,19982,19982,2008,161,323127
+kidney,4803,19982,19982,1700,114,193686
+lung,4857,19982,19982,2203,156,343512

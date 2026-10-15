@@ -1,0 +1,466 @@
+{
+  "sources": {
+    "ARACNe-GTEx": {
+      "family": "COEXP",
+      "lineage": "DoRothEA",
+      "genome_wide": true,
+      "held_out": false,
+      "components": [
+        "ARACNe-GTEx"
+      ],
+      "channels": [
+        "DoRothEA"
+      ],
+      "complete": true,
+      "use_in_chip_sensitivity": false
+    },
+    "CytReg": {
+      "family": "LIT",
+      "lineage": "CollecTRI",
+      "genome_wide": false,
+      "held_out": false,
+      "components": [
+        "CytReg"
+      ],
+      "channels": [
+        "CollecTRI"
+      ],
+      "complete": true,
+      "use_in_chip_sensitivity": false
+    },
+    "ENCODE-distal": {
+      "family": "CHIP",
+      "lineage": "OmniPath-tf_target",
+      "genome_wide": true,
+      "held_out": true,
+      "components": [
+        "ENCODE-distal"
+      ],
+      "channels": [
+        "OmniPath-tf_target"
+      ],
+      "complete": false,
+      "use_in_chip_sensitivity": false
+    },
+    "ENCODE-proximal": {
+      "family": "CHIP",
+      "lineage": "OmniPath-tf_target",
+      "genome_wide": true,
+      "held_out": true,
+      "components": [
+        "ENCODE-proximal"
+      ],
+      "channels": [
+        "OmniPath-tf_target"
+      ],
+      "complete": false,
+      "use_in_chip_sensitivity": false
+    },
+    "ExTRI": {
+      "family": "LIT",
+      "lineage": "CollecTRI",
+      "genome_wide": false,
+      "held_out": false,
+      "components": [
+        "ExTRI"
+      ],
+      "channels": [
+        "CollecTRI"
+      ],
+      "complete": true,
+      "use_in_chip_sensitivity": false
+    },
+    "FANTOM4": {
+      "family": "LIT",
+      "lineage": "DoRothEA",
+      "genome_wide": false,
+      "held_out": false,
+      "components": [
+        "FANTOM4"
+      ],
+      "channels": [
+        "DoRothEA"
+      ],
+      "complete": true,
+      "use_in_chip_sensitivity": false
+    },
+    "GEREDB": {
+      "family": "LIT",
+      "lineage": "CollecTRI",
+      "genome_wide": false,
+      "held_out": false,
+      "components": [
+        "GEREDB"
+      ],
+      "channels": [
+        "CollecTRI"
+      ],
+      "complete": true,
+      "use_in_chip_sensitivity": false
+    },
+    "GOA": {
+      "family": "LIT",
+      "lineage": "CollecTRI",
+      "genome_wide": false,
+      "held_out": false,
+      "components": [
+        "GOA"
+      ],
+      "channels": [
+        "CollecTRI"
+      ],
+      "complete": true,
+      "use_in_chip_sensitivity": false
+    },
+    "HOCOMOCO": {
+      "family": "MOTIF",
+      "lineage": "DoRothEA",
+      "genome_wide": true,
+      "held_out": false,
+      "components": [
+        "HOCOMOCO"
+      ],
+      "channels": [
+        "DoRothEA"
+      ],
+      "complete": true,
+      "use_in_chip_sensitivity": false
+    },
+    "HTRIdb": {
+      "family": "LIT",
+      "lineage": "Multi-integrator",
+      "genome_wide": false,
+      "held_out": false,
+      "components": [
+        "HTRIdb"
+      ],
+      "channels": [
+        "CollecTRI",
+        "DoRothEA"
+      ],
+      "complete": true,
+      "use_in_chip_sensitivity": false
+    },
+    "IntAct": {
+      "family": "LIT",
+      "lineage": "Multi-integrator",
+      "genome_wide": false,
+      "held_out": false,
+      "components": [
+        "IntAct"
+      ],
+      "channels": [
+        "CollecTRI",
+        "DoRothEA"
+      ],
+      "complete": true,
+      "use_in_chip_sensitivity": false
+    },
+    "JASPAR": {
+      "family": "MOTIF",
+      "lineage": "DoRothEA",
+      "genome_wide": true,
+      "held_out": false,
+      "components": [
+        "JASPAR"
+      ],
+      "channels": [
+        "DoRothEA"
+      ],
+      "complete": true,
+      "use_in_chip_sensitivity": false
+    },
+    "KEGG": {
+      "family": "LIT",
+      "lineage": "DoRothEA",
+      "genome_wide": false,
+      "held_out": false,
+      "components": [
+        "KEGG"
+      ],
+      "channels": [
+        "DoRothEA"
+      ],
+      "complete": true,
+      "use_in_chip_sensitivity": false
+    },
+    "LIT_other": {
+      "family": "LIT",
+      "lineage": "DoRothEA",
+      "genome_wide": false,
+      "held_out": false,
+      "components": [
+        "DoRothEA-reviews",
+        "NFIRegulomeDB"
+      ],
+      "channels": [
+        "DoRothEA"
+      ],
+      "complete": true,
+      "use_in_chip_sensitivity": false
+    },
+    "NTNU.Curated": {
+      "family": "LIT",
+      "lineage": "CollecTRI",
+      "genome_wide": false,
+      "held_out": false,
+      "components": [
+        "NTNU.Curated"
+      ],
+      "channels": [
+        "CollecTRI"
+      ],
+      "complete": true,
+      "use_in_chip_sensitivity": false
+    },
+    "ORegAnno": {
+      "family": "LIT",
+      "lineage": "DoRothEA",
+      "genome_wide": false,
+      "held_out": false,
+      "components": [
+        "ORegAnno"
+      ],
+      "channels": [
+        "DoRothEA"
+      ],
+      "complete": true,
+      "use_in_chip_sensitivity": false
+    },
+    "PAZAR": {
+      "family": "LIT",
+      "lineage": "DoRothEA",
+      "genome_wide": false,
+      "held_out": false,
+      "components": [
+        "PAZAR"
+      ],
+      "channels": [
+        "DoRothEA"
+      ],
+      "complete": true,
+      "use_in_chip_sensitivity": false
+    },
+    "PAZAR-HT": {
+      "family": "CHIP",
+      "lineage": "DoRothEA",
+      "genome_wide": true,
+      "held_out": true,
+      "components": [
+        "PAZAR-HT"
+      ],
+      "channels": [
+        "DoRothEA"
+      ],
+      "complete": true,
+      "use_in_chip_sensitivity": true
+    },
+    "Pavlidis2021": {
+      "family": "LIT",
+      "lineage": "CollecTRI",
+      "genome_wide": false,
+      "held_out": false,
+      "components": [
+        "Pavlidis2021"
+      ],
+      "channels": [
+        "CollecTRI"
+      ],
+      "complete": true,
+      "use_in_chip_sensitivity": false
+    },
+    "ReMap": {
+      "family": "CHIP",
+      "lineage": "DoRothEA",
+      "genome_wide": true,
+      "held_out": true,
+      "components": [
+        "ReMap"
+      ],
+      "channels": [
+        "DoRothEA"
+      ],
+      "complete": true,
+      "use_in_chip_sensitivity": true
+    },
+    "SIGNOR": {
+      "family": "LIT",
+      "lineage": "CollecTRI",
+      "genome_wide": false,
+      "held_out": false,
+      "components": [
+        "SIGNOR"
+      ],
+      "channels": [
+        "CollecTRI"
+      ],
+      "complete": true,
+      "use_in_chip_sensitivity": false
+    },
+    "TFactS": {
+      "family": "LIT",
+      "lineage": "Multi-integrator",
+      "genome_wide": false,
+      "held_out": false,
+      "components": [
+        "TFactS"
+      ],
+      "channels": [
+        "CollecTRI",
+        "DoRothEA"
+      ],
+      "complete": true,
+      "use_in_chip_sensitivity": false
+    },
+    "TFe": {
+      "family": "LIT",
+      "lineage": "DoRothEA",
+      "genome_wide": false,
+      "held_out": false,
+      "components": [
+        "TFe"
+      ],
+      "channels": [
+        "DoRothEA"
+      ],
+      "complete": true,
+      "use_in_chip_sensitivity": false
+    },
+    "TRED": {
+      "family": "LIT",
+      "lineage": "DoRothEA",
+      "genome_wide": false,
+      "held_out": false,
+      "components": [
+        "TRED"
+      ],
+      "channels": [
+        "DoRothEA"
+      ],
+      "complete": true,
+      "use_in_chip_sensitivity": false
+    },
+    "TRRUST": {
+      "family": "LIT",
+      "lineage": "Multi-integrator",
+      "genome_wide": false,
+      "held_out": false,
+      "components": [
+        "TRRUST"
+      ],
+      "channels": [
+        "CollecTRI",
+        "DoRothEA",
+        "TRRUST-file"
+      ],
+      "complete": true,
+      "use_in_chip_sensitivity": false
+    }
+  },
+  "held_in": [
+    "ARACNe-GTEx",
+    "CytReg",
+    "ExTRI",
+    "FANTOM4",
+    "GEREDB",
+    "GOA",
+    "HOCOMOCO",
+    "HTRIdb",
+    "IntAct",
+    "JASPAR",
+    "KEGG",
+    "LIT_other",
+    "NTNU.Curated",
+    "ORegAnno",
+    "PAZAR",
+    "Pavlidis2021",
+    "SIGNOR",
+    "TFactS",
+    "TFe",
+    "TRED",
+    "TRRUST"
+  ],
+  "lit_other_components": [
+    "DoRothEA-reviews",
+    "NFIRegulomeDB"
+  ],
+  "genome_wide_families": [
+    "MOTIF",
+    "COEXP",
+    "CHIP"
+  ],
+  "chip_sensitivity_sources": [
+    "ReMap",
+    "PAZAR-HT"
+  ],
+  "lit_min_edges": 300,
+  "pazar_ht_min_targets": 1000,
+  "duplicate_drops": {
+    "TRRD": {
+      "container": "TFactS",
+      "n_edges": 209,
+      "n_duplicated_dropped": 209,
+      "n_kept": 0
+    },
+    "NFIRegulomeDB": {
+      "container": "PAZAR",
+      "n_edges": 28,
+      "n_duplicated_dropped": 21,
+      "n_kept": 7
+    }
+  },
+  "lit_ht_like_regulons": [
+    [
+      "ExTRI",
+      "SP1"
+    ],
+    [
+      "ExTRI",
+      "TP53"
+    ],
+    [
+      "ORegAnno",
+      "CTCF"
+    ],
+    [
+      "ORegAnno",
+      "GATA2"
+    ],
+    [
+      "ORegAnno",
+      "STAT1"
+    ],
+    [
+      "ORegAnno",
+      "YY1"
+    ],
+    [
+      "PAZAR",
+      "HIF1A"
+    ],
+    [
+      "TRED",
+      "E2F1"
+    ],
+    [
+      "TRED",
+      "MYC"
+    ]
+  ],
+  "lit_ht_max_targets": 500,
+  "lit_ht_like_description": "lit_no_ht removes exactly the 9 LIT regulons in data/r2/tables/lit_ht_like_regulons.csv: 5 named high-throughput-like regulons (PAZAR HIF1A; ORegAnno CTCF, YY1, STAT1, GATA2; decision log item 4; named during the first verification partly from ORegAnno's 23% overlap with the held-out ENCODE tags, disclosed) and 4 further regulons with > 500 targets (ExTRI SP1, TP53 [text-mined: large, not high-throughput]; TRED MYC, E2F1; rule added 2026-10-07). It does not remove FANTOM4, the other ORegAnno regulons, NFIRegulomeDB (LIT_other) or HTRIdb; these are removed in lit_no_chipderived.",
+  "lit_no_chipderived_drop": [
+    "FANTOM4",
+    "HTRIdb",
+    "ORegAnno",
+    "LIT_other"
+  ],
+  "lit_no_chipderived_description": "lit_no_chipderived removes the whole held-in LIT sources FANTOM4, HTRIdb, ORegAnno, LIT_other (PRESPECIFIED['lit_no_chipderived_drop']; decision log item 9): every held-in literature source that may contain records derived from binding experiments (FANTOM4, HTRIdb incl. its CollecTRI copy, ORegAnno, and LIT_other = DoRothEA-reviews + the 7 non-duplicate NFIRegulomeDB edges); the curated conditioning set is recomputed without them.",
+  "merge_sets": {
+    "ExTRI+NTNU.Curated": [
+      "ExTRI",
+      "NTNU.Curated"
+    ]
+  },
+  "conditioning_set": "edges with family == 'LIT' and via_dorothea (DoRothEA-channel held-in literature evidence)"
+}

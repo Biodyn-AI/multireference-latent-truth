@@ -1,0 +1,42 @@
+key,value,analysis_status
+tables built (machine and software recorded),2026-10-14 20:37:57 BST,prespecified
+cpu,Apple M2 Pro,prespecified
+hw.ncpu,10,prespecified
+hw.physicalcpu,10,prespecified
+hw.perflevel0.physicalcpu (performance cores),6,prespecified
+hw.perflevel1.physicalcpu (efficiency cores),4,prespecified
+hw.memsize (bytes),34359738368,prespecified
+os,macOS 26.3 25D125,prespecified
+platform,macOS-26.3-arm64-arm-64bit,prespecified
+python,3.11.9,prespecified
+python executable (resolved),/Users/ihorkendiukhov/anaconda3/bin/python3.11,prespecified
+python prefix,/Users/ihorkendiukhov/anaconda3,prespecified
+numpy,1.26.4,prespecified
+scipy,1.16.3,prespecified
+pandas,2.3.3,prespecified
+jax,0.7.1,prespecified
+jaxlib,0.7.1,prespecified
+numpyro,0.19.0,prespecified
+arviz,0.23.0,prespecified
+psutil,7.2.1,prespecified
+env OMP_NUM_THREADS,2,prespecified
+env OPENBLAS_NUM_THREADS,2,prespecified
+env MKL_NUM_THREADS,2,prespecified
+env VECLIB_MAXIMUM_THREADS,2,prespecified
+env XLA_FLAGS,--xla_cpu_multi_thread_eigen=false intra_op_parallelism_threads=2,prespecified
+niceness,"10 (nice -n 10, inherited by the measurement subprocesses)",prespecified
+measurement,every measurement in a fresh subprocess; machine shared with other agents (wall times are upper bounds; see the session rows),prespecified
+template snapshot written,2026-10-08 21:15,prespecified
+template generating parameters vs the currently stored fit (max |dw| / max |dtheta|),"3.00e-07 / 3.34e-06 (the stored optimum was Newton-polished after the snapshot; 'all' keeps an existing template, 'template' rebuilds it and then every stage must be re-run with --force)",prespecified
+session a,"complete grid, 2026-10-08/09; the MAP and NUTS drivers ran concurrently from 22:22 on (<= 2 measurement subprocesses at a time); machine heavily loaded by other agents",prespecified
+session a: measurement records,64,prespecified
+session a: projection-only records (NUTS not run),8,prespecified
+session a: first / last measurement written,2026-10-08 21:18 / 2026-10-09 01:25,prespecified
+"session a: 1-min load average, per-run means (min / median / max)",21.3 / 44.0 / 217.1 on 10 cores,prespecified
+session a: largest 1-min load average seen during a run,311.9,prespecified
+session b,"replicate, 2026-10-13, one measurement subprocess at a time (machine still shared): compression and per-evaluation timings of every configuration; MAP restarts of the configurations whose 10 restarts took <= 300 s in session a; NUTS of the configurations measured within the budget in session a",post_hoc
+session b: measurement records,62,post_hoc
+session b: projection-only records (NUTS not run),10,post_hoc
+session b: first / last measurement written,2026-10-13 15:14 / 2026-10-13 16:24,post_hoc
+"session b: 1-min load average, per-run means (min / median / max)",23.3 / 36.2 / 55.2 on 10 cores,post_hoc
+session b: largest 1-min load average seen during a run,70.1,post_hoc

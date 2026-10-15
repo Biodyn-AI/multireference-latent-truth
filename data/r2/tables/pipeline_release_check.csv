@@ -1,0 +1,22 @@
+check,key,value,description,analysis_status
+archive,bytes_compressed,856805368,size of the archive,post_hoc
+archive,gib_compressed,0.8,size of the archive (GiB),post_hoc
+archive,gib_extracted,0.9,extracted size of the archive members (GiB),post_hoc
+archive,n_files,2799,archive members verified against their SHA-256,post_hoc
+tables,n_repo_files,509,repository files copied (git ls-files -co),post_hoc
+tables,copy_run_exit,0,exit code of the copy's tables-only run,post_hoc
+tables,n_tables,131,committed tables compared,post_hoc
+tables,n_regenerated,126,committed tables moved aside in the copy and regenerated,post_hoc
+tables,n_regenerated_identical,122,regenerated tables byte-identical,post_hoc
+tables,n_regenerated_timing_only,2,regenerated tables that differ only in run-time columns,post_hoc
+tables,n_regenerated_run_records,2,"regenerated tables that record the run itself (machine, build time)",post_hoc
+tables,n_kept,5,tables the run updates rather than writes,post_hoc
+tables,n_differ,0,"tables that differ in an analysis column, are missing or are extra",post_hoc
+tables,n_data_reads_outside,0,data files read outside the copy,post_hoc
+tables,finished,2026-10-15T04:55:16,end of the table check,post_hoc
+paper_assets,copy_run_exit,0,exit code of the copy's paper_assets stage,post_hoc
+paper_assets,n_assets,115,"generated tables, figures, digest and numbers",post_hoc
+paper_assets,n_same,113,assets identical apart from time stamps (text) or metadata (PDF pages rendered pixel-identical),post_hoc
+paper_assets,n_timing_only,2,assets that differ only in run times,post_hoc
+paper_assets,n_differ,0,assets that differ otherwise or are missing,post_hoc
+paper_assets,finished,2026-10-15T04:56:34,end of the paper-asset check,post_hoc

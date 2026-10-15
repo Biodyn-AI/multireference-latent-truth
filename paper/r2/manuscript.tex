@@ -1,0 +1,91 @@
+\documentclass[11pt,a4paper]{article}
+
+% ---- Packages ----
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{mathptmx}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{xr-hyper}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage[authoryear,round]{natbib}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage{url}
+\usepackage{lineno}
+
+\hypersetup{colorlinks=true,linkcolor=blue!60!black,citecolor=blue!60!black,urlcolor=blue!60!black}
+\captionsetup{font=small,labelfont=bf}
+\graphicspath{{figures/}}
+\externaldocument[]{supplement}
+\InputIfFileExists{references_supp_keys}{}{}
+
+% Script-generated numbers (numbers.tex, written by make_paper_assets.py from the analysis tables)
+\InputIfFileExists{numbers.tex}{}{}
+
+\title{%
+  Latent Truth Without a Gold Standard:\\
+  Multi-Reference Credibility Modeling and Claim Governance\\
+  for Gene-Regulatory-Network Benchmarking%
+}
+\author{%
+  Ihor Kendiukhov\textsuperscript{*}\\[4pt]
+  {\normalsize Department of Computer Science, University of T\"ubingen, T\"ubingen, Germany}\\[2pt]
+  {\normalsize \texttt{kenduhov.ig@gmail.com}}\\[2pt]
+  {\small ORCID: \url{https://orcid.org/0000-0001-5342-1499}}
+}
+\date{}
+
+\begin{document}
+\linenumbers
+\maketitle
+\noindent\textsuperscript{*}Corresponding author: Ihor Kendiukhov, Department of Computer Science, University of T\"ubingen, Sand 14, 72076 T\"ubingen, Germany (kenduhov.ig@gmail.com).\\
+\noindent\textbf{Running title:} Multi-reference credibility for GRN benchmarking
+
+\begin{abstract}
+\input{sec_abstract}
+\end{abstract}
+
+\noindent\textbf{Keywords:} latent class model; reference standard; conditional dependence; false discovery rate; gene regulatory networks; benchmarking
+
+\input{sec_intro}
+\input{sec_related}
+\input{sec_methods}
+\input{sec_data}
+\input{sec_results}
+\input{sec_discussion}
+\input{sec_conclusion}
+
+\section*{Acknowledgments}
+The author thanks the developers and curators of the OmniPath, DoRothEA, CollecTRI, TRRUST and other primary regulatory resources listed in Supplementary Table~\ref{tab:S-sources}, of ENCODE, Harmonizome and the ENCODE regulatory networks, of Tabula Sapiens, scGPT, Geneformer, arboreto and scPerturb, and the authors of the perturbation screens analysed here for making their data public.
+
+\section*{Research ethics}
+Not applicable.
+
+\section*{Informed consent}
+Not applicable.
+
+\section*{Author contributions}
+The author has accepted responsibility for the entire content of this manuscript and approved its submission. I.K.\ conceived and designed the study, made all analytical and interpretive decisions, and wrote the manuscript, with the assistance described under Use of Large Language Models, AI and Machine Learning Tools.
+
+\section*{Use of Large Language Models, AI and Machine Learning Tools}
+Large language model assistants (Claude, Anthropic) were used extensively: to write and run analysis code under the author's direction, to audit code, data provenance and reported numbers, and to draft and edit manuscript text and figures. The author designed the study, made all analytical and interpretive decisions, checked the outputs and takes full responsibility for the content.
+
+\section*{Conflict of interest}
+The author states no conflict of interest.
+
+\section*{Research funding}
+None declared.
+
+\section*{Data availability}
+\input{sec_availability}
+
+\input{references}
+
+\end{document}

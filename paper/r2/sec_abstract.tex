@@ -1,0 +1,8 @@
+Benchmarks of inferred gene regulatory networks rely on incomplete, mutually dependent, unevenly curated references.
+We formulate multi-reference evaluation as Bayesian latent-class estimation: \nNAnnotHeldin{} public transcription factor (TF)--target resources, grouped by evidence modality, are imperfect annotators of a latent true edge, with family-specific dependence and hierarchical pooling (Family-HB), fitted by posterior-mode search and Hamiltonian Monte Carlo.
+Family-HB is no more robust to resource dropout than a Dawid--Skene model and does not outperform simple combination rules on held-out ChIP-seq references and \nCohN{} CRISPR screens (\nRepPassAllD{} studies evaluable).
+Its posterior is bimodal, and in tissue universes literature consensus and copying are only weakly distinguishable.
+Post hoc analyses show that coverage is not missing at random, which an informative-observation model does not repair.
+Precision gains in context-matched universes reflect prevalence.
+Label-free claim tiers controlling the posterior expected false discovery rate are nonetheless enriched for held-out binding (\nGovOeEnetMin{}- to \nGovOeEnetMax{}-fold on a specific ChIP network, TF-matched) and show, in \nRepPassPowD{} adequately powered screens (global universe), a modest TF-specific association with perturbation response.
+For scGPT and Geneformer attention in three tissues, almost no top-ranked scGPT edge qualifies as a supported claim, and scGPT attention largely reflects the number of genes expressed per cell.

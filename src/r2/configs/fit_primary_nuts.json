@@ -1,0 +1,89 @@
+{
+  "description": "Frozen NUTS settings of src/r2/fit_primary.py (NUTS_SETTINGS; fixed 2026-10-08, verifier finding M5). fit_primary.py all/nuts use these by default (--settings frozen); tests/test_fit_primary.py checks that this file equals NUTS_SETTINGS.",
+  "settings": {
+    "family_hb_nuts": {
+      "global": {
+        "num_chains": 4,
+        "num_warmup": 1000,
+        "num_samples": 1000,
+        "target_accept": 0.95,
+        "init": "map_laplace",
+        "init_overdispersion": 1.0,
+        "chain_method": "sequential"
+      },
+      "immune": {
+        "num_chains": 4,
+        "num_warmup": 1000,
+        "num_samples": 1000,
+        "target_accept": 0.95,
+        "init": "map_laplace",
+        "init_overdispersion": 1.0,
+        "chain_method": "sequential"
+      },
+      "kidney": {
+        "num_chains": 4,
+        "num_warmup": 1000,
+        "num_samples": 1000,
+        "target_accept": 0.95,
+        "init": "map_laplace",
+        "init_overdispersion": 1.0,
+        "chain_method": "sequential"
+      },
+      "lung": {
+        "num_chains": 4,
+        "num_warmup": 1000,
+        "num_samples": 1000,
+        "target_accept": 0.95,
+        "init": "map_laplace",
+        "init_overdispersion": 1.0,
+        "chain_method": "sequential"
+      }
+    },
+    "family_hb_randinit_nuts": {
+      "global": {
+        "num_chains": 4,
+        "num_warmup": 1000,
+        "num_samples": 1000,
+        "target_accept": 0.95,
+        "init": "random",
+        "init_radius": 2.0,
+        "chain_method": "sequential"
+      },
+      "immune": {
+        "num_chains": 4,
+        "num_warmup": 1000,
+        "num_samples": 1000,
+        "target_accept": 0.95,
+        "init": "random",
+        "init_radius": 2.0,
+        "chain_method": "sequential"
+      },
+      "kidney": {
+        "num_chains": 4,
+        "num_warmup": 1000,
+        "num_samples": 1000,
+        "target_accept": 0.95,
+        "init": "random",
+        "init_radius": 2.0,
+        "chain_method": "sequential"
+      },
+      "lung": {
+        "num_chains": 4,
+        "num_warmup": 1000,
+        "num_samples": 1000,
+        "target_accept": 0.95,
+        "init": "random",
+        "init_radius": 2.0,
+        "chain_method": "sequential"
+      }
+    }
+  },
+  "history": [
+    "2026-10-08 first pass: settings chosen by a wall-clock pilot (load-dependent); global family_hb_nuts ran 4 x 500/500 (projected 92.97 min > 90), all other runs 4 x 1000/1000.",
+    "2026-10-08 first pass: map_laplace start dispersion changed from 2 to 1 after the immune run with dispersion 2 lost a chain to the second mode during warm-up (superseded log and chains CSV kept in outputs/r2/fits/).",
+    "2026-10-08 fit_fixes: settings frozen as NUTS_SETTINGS (all 4 x 1000/1000, target_accept 0.95); re-runs of every family_hb_nuts (dominant-mode) fit with the current code from the polished MAP optimum were started; only the immune re-run finished on 2026-10-08 (kidney, lung and global: see the 2026-10-13 entries).",
+    "2026-10-08 fit_fixes: the family_hb_randinit_nuts fits were NOT re-run (load average 70-180; projected global run > 6 h); they are the first-pass runs, made with settings equal to NUTS_SETTINGS; immune/global were relabelled by the committed src/r2/patch_randinit_layout.py.",
+    "2026-10-13 fit_fixes (resumed): the 2026-10-08 re-runs of the kidney, lung and global family_hb_nuts fits had been interrupted (only immune had finished); the three were re-run with the frozen settings. The first-pass fits and tables are kept in outputs/r2/fits/_superseded_firstpass/. patch_randinit_layout.py was re-applied to immune/global; the random-init chain labels of all four universes agree with the polished MAP optima.",
+    "2026-10-13 fit_fixes (resumed): the global family_hb_nuts re-run (4 x 1000/1000, target_accept 0.95) completed at the third attempt (started 18:54 BST, 87.9 min); the attempts of 2026-10-08 21:33 and 2026-10-13 15:06 were killed before writing a result (session interruption; laptop sleep). No setting was changed between attempts."
+  ]
+}

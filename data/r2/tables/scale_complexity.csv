@@ -1,0 +1,10 @@
+stage,time,memory,notes,analysis_status
+evidence encoding,O(N K),O(n_c K) per chunk,"each edge's K values {-1,0,1} are packed into ceil(K/39) int64 base-3 words",prespecified
+"pattern compression (streaming, by TF chunk)",O(N K + N log n_c + C P_c log(C P_c)),O(N) int32 edge->pattern index + O(n_c K) chunk + O(P K) table,"sort-based unique per chunk of n_c edges, merge of C chunk dictionaries, O(N) remap; hashing would make it O(N K) expected",prespecified
+"pattern compression (whole matrix, lcm.PatternData.from_matrix)",O(N K log N),O(N K) matrix + O(N) int64 sort/inverse arrays,np.unique(axis=0) over the dense matrix,prespecified
+number of patterns P,"P <= min(N, 3^K, M + N_rep)",-,"M distinct observation masks, N_rep edges with >= 1 report: every unreported edge has the all-zero pattern of its mask; TF-blocked observation (coverage x target node sets) keeps M small",prespecified
+log posterior + gradient (one evaluation),O(P K S),O(P K) (16 P K bytes float64) + O(P S),independent of N given P: N enters only through the pattern counts,prespecified
+MAP (multi-start L-BFGS),O(R I P K S),O(P K) + O(R P) stored restart credibilities,"R restarts, I objective+gradient evaluations per restart; I is not constant: it grew with N in the experiments (scale_fits.csv, 'MAP evaluations per restart vs N')",prespecified
+NUTS,O(C D L P K S),O(P K + C D d); + O(C D P) if credibility is stored per draw,"C chains, D iterations, L leapfrog steps per iteration (<= 1023), d parameters; L grew with N up to the tree-depth cap in the experiments",prespecified
+posterior credibility (lcm.nuts_credibility),O(D' P K S),O(D' P) (quantiles); O(P) streaming mean/sd,D' retained draws,prespecified
+edge-level outputs,O(N),O(N),credibility of an edge = credibility of its pattern (index lookup),prespecified

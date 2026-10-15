@@ -1,0 +1,68 @@
+{
+  "inputs": {
+    "collectri": {
+      "file": "collectri_omnipath_2026-10-07.tsv",
+      "sha256": "1da794df613d7848397aed4383f272af5fe002f0ed5e81c380952a1dfd7a6870",
+      "bytes": 130888770,
+      "format": "tsv",
+      "url": "https://omnipathdb.org/interactions?datasets=collectri&genesymbols=1&fields=sources,references,curation_effort,evidences,extra_attrs&license=academic&organisms=9606",
+      "access_date": "2026-10-07",
+      "obtained": "HTTP GET (urllib)",
+      "http_headers_file": "collectri_headers_2026-10-07.txt",
+      "omnipath_server": "Hello, this is the omnipath-server 0.1.5. Welcome! For the descriptions of pathway resources go to `/info`. Available query types: complexes, enzsub, interactions, intercell, annotations",
+      "portable": {
+        "path": "data/r2/inputs/annotator_raw/collectri_omnipath_2026-10-07.parquet",
+        "format": "parquet",
+        "sha256": "7961f048851df913f5f6e3407efd41db7b23e75181af8315cb547a56438b41a0",
+        "bytes": 7548013,
+        "n_rows": 64516,
+        "note": "zstd parquet export of the frozen tsv file (pandas 2.3.3, pyarrow 22.0.0); loads to the identical table (object nulls as NaN)"
+      }
+    },
+    "dorothea": {
+      "file": "dorothea_omnipath_AD_2026-01-08.pickle",
+      "sha256": "9458b0c756cf9b7ea0bce0f6d6f3c45a2d28cccaa67f99cb2021db479f5f4319",
+      "bytes": 157206058,
+      "format": "pickle",
+      "url": "https://omnipathdb.org/interactions?datasets=dorothea&dorothea_levels=A%2CB%2CC%2CD&fields=curation_effort%2Cdorothea_chipseq%2Cdorothea_coexp%2Cdorothea_curated%2Cdorothea_level%2Cdorothea_tfbs%2Cevidences%2Creferences%2Csources&format=tsv&genesymbols=1&license=academic&organisms=9606",
+      "access_date": "2026-01-08",
+      "obtained": "omnipath Python client 1.0.12 cache entry 9cd437b8dd1b8298a289e120dd970e8f.pickle (cache key = md5 of the request URL, verified)",
+      "origin_path": "/Users/ihorkendiukhov/.cache/omnipathdb/9cd437b8dd1b8298a289e120dd970e8f.pickle",
+      "origin_mtime": "2026-01-08 17:23:47",
+      "portable": {
+        "path": "data/r2/inputs/annotator_raw/dorothea_omnipath_AD_2026-01-08.parquet",
+        "format": "parquet",
+        "sha256": "7b2c57600375332874d549b2d728de28163d1db55b504715da630d9729a183a6",
+        "bytes": 4787900,
+        "n_rows": 278677,
+        "note": "zstd parquet export of the frozen pickle file (pandas 2.3.3, pyarrow 22.0.0); loads to the identical table (object nulls as NaN)"
+      }
+    },
+    "trrust": {
+      "file": "trrust_rawdata.human.tsv",
+      "sha256": "9b909319ccc8e36588b5a1bd3640e0dfba03936c6fc154cc4304d742bec11bed",
+      "bytes": 297659,
+      "format": "tsv",
+      "url": "https://www.grnpedia.org/trrust/data/trrust_rawdata.human.tsv",
+      "access_date": "on or before 2026-01-11 (file mtime)",
+      "obtained": "local copy of the TRRUST v2 raw human file used throughout the project",
+      "origin_path": "/Users/ihorkendiukhov/biodyn-work/single_cell_mechinterp/external/networks/trrust_human.tsv",
+      "origin_mtime": "2026-01-11 01:06:29",
+      "remote_head": {
+        "checked": "2026-10-07",
+        "status": 200,
+        "last_modified": "Mon, 16 Apr 2018 01:36:44 GMT",
+        "content_length": "297659"
+      },
+      "portable": {
+        "path": "data/r2/inputs/annotator_raw/trrust_rawdata.human.tsv",
+        "format": "tsv",
+        "sha256": "9b909319ccc8e36588b5a1bd3640e0dfba03936c6fc154cc4304d742bec11bed",
+        "bytes": 297659,
+        "n_rows": 9396,
+        "note": "byte copy of the frozen file"
+      }
+    }
+  },
+  "frozen": "2026-10-07T22:56:44"
+}

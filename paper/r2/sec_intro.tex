@@ -1,0 +1,26 @@
+\section{Introduction}\label{sec:intro}
+
+Single-cell foundation models such as scGPT~\citep{cui2024scgpt} and Geneformer~\citep{theodoris2023transfer} are increasingly used to propose gene-regulatory-network (GRN) edges, most often by ranking transcription factor (TF)--target pairs by attention weights.
+Whether such edges are correct can only be judged against prior knowledge, and that prior knowledge is a patchwork: literature-curated interaction databases, motif-based predictions, coexpression-derived regulons and ChIP-seq occupancy maps, each incomplete, each biased toward well-studied genes, and many of them partly derived from one another~\citep{garcia2019benchmark,mullerdott2023collectri}.
+The usual practice of declaring one of these resources the ground truth makes method rankings depend on the reference chosen~\citep{pratapa2020benchmarking}, and treats agreement between resources that copy each other as independent confirmation.
+
+Statistically, this is the problem of evaluating classifiers when no gold standard exists and the available imperfect raters are dependent, which has a long history in diagnostic testing and crowd-sourced annotation~\citep{dawid1979maximum,hui1980estimating,dendukuri2001bayesian,albert2004cautionary}.
+It suggests replacing the single reference by a latent-class model in which every resource is a noisy annotator of an unobserved true regulatory status, so that each candidate edge receives a posterior probability of being real: its \emph{credibility}.
+This paper develops that idea for GRN benchmarking and, equally importantly, tests how far it can be trusted.
+
+We make four contributions.
+\begin{enumerate}
+  \item \textbf{A fully specified latent-class model of reference agreement.} In the hierarchical Bayesian model we formulate (Family-HB), \nNAnnotHeldin{} public TF--target resources, grouped into evidence-modality families, report edges with annotator-specific sensitivity and false-positive rates; family-specific ``burst'' classes capture correlated false reports within a family, and annotator parameters are partially pooled within families. Inference is by multi-start posterior-mode search and Hamiltonian Monte Carlo, with convergence and identifiability diagnostics, simulation checks of calibration and of mode selection, and a complexity analysis (\Cref{sec:methods}).
+  \item \textbf{A held-out evaluation design.} All evidence that enters the model is separated from all evidence used to judge it. The model is fitted to literature, motif and coexpression resources only; ChIP-seq references and \nCohN{} CRISPR perturbation cohorts from \nCohStudies{} studies are held out. Interval estimates resample TFs, not edges; every estimator is compared with standard meta-analytic combination rules and established integration schemes, and Family-HB in the tissue universes also with expression-based network inference (\Cref{sec:data,sec:eval} and \Cref{fig:design}).
+  \item \textbf{Universe-aware evaluation.} Credibility is estimated in a reference-scale universe and in tissue-specific universes of edges that scGPT and Geneformer can score. We decompose differences in raw precision between universes into a prevalence component and a ranking component and calibrate them against prevalence-matched random universes (\Cref{sec:res-universe}).
+  \item \textbf{Label-free claim governance.} Credibility is converted into claim tiers by controlling the posterior expected false discovery rate, with tier boundaries placed only between blocks of tied edges and with a consistency requirement across the two universes. The tiers are checked against held-out data, their sensitivity to every threshold is mapped, and a design-based power analysis fixes in advance which perturbation studies can replicate them (\Cref{sec:governance,sec:res-governance,sec:res-replication}).
+\end{enumerate}
+
+The empirical picture that emerges is more qualified than the latent-class literature might lead one to expect, and we report it as such.
+The model can be fitted to convergence, and its claim tiers are enriched for held-out binding and, in the global universe, for perturbation evidence.
+However, the hierarchical model with dependence is not more stable than a plain Dawid--Skene model, does not outperform simple combination rules on held-out data, and its posterior is bimodal because literature consensus and literature copying are only weakly distinguishable.
+The most consequential finding, from post hoc analyses, concerns an assumption shared by all these estimators: which edges a resource covers is itself informative about regulation, so treating uncovered edges as missing at random misranks them.
+An extension that models coverage explicitly does not repair this (\Cref{sec:obsmodel,sec:res-obs}).
+Applied to foundation-model attention in immune, kidney and lung tissue, the framework shows that almost none of the edges ranked highest by scGPT attention qualify as supported claims, and that scGPT attention is largely explained by the number of genes expressed per cell.
+
+\input{figures/fig1_design_float}

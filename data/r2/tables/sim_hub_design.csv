@@ -1,0 +1,82 @@
+section,quantity,family,value,analysis_status,status_basis
+design,fixed_on,,2026-10-08,post_hoc,design_fixed_after_checkpoint
+design,timing,,E6 planned before held-out evaluation (REVISION_PLAN_R2 2.3); numerical design fixed after the results checkpoint (plan 8) and before any simulation fit; no held-out data used,post_hoc,design_fixed_after_checkpoint
+design,n_tf,,400,post_hoc,design_fixed_after_checkpoint
+design,n_target,,3000,post_hoc,design_fixed_after_checkpoint
+design,log_popularity_sd,,1.2,post_hoc,design_fixed_after_checkpoint
+design,p0,,0.01,post_hoc,design_fixed_after_checkpoint
+design,tf_degree_sd,,0.5,post_hoc,design_fixed_after_checkpoint
+design,target_propensity_sd,,0.5,post_hoc,design_fixed_after_checkpoint
+design,p_max,,0.5,post_hoc,design_fixed_after_checkpoint
+design,bio_hub_exponent,,0.3,post_hoc,design_fixed_after_checkpoint
+design,copy_base,,0.002,post_hoc,design_fixed_after_checkpoint
+design,copy_hub,,0.004,post_hoc,design_fixed_after_checkpoint
+design,lit_coverage,,"[0.6, 0.45, 0.35, 0.3, 0.25, 0.2, 0.15, 0.12, 0.1, 0.08, 0.06, 0.05]",post_hoc,design_fixed_after_checkpoint
+design,lit_coverage_slope,,1.0,post_hoc,design_fixed_after_checkpoint
+design,lit_sensitivity,,"[0.45, 0.3, 0.4, 0.25, 0.35, 0.2, 0.3, 0.15, 0.25, 0.1, 0.2, 0.15]",post_hoc,design_fixed_after_checkpoint
+design,lit_sensitivity_slope,,0.5,post_hoc,design_fixed_after_checkpoint
+design,lit_fpr,,"[0.002, 0.001, 0.003, 0.0015, 0.004, 0.002, 0.005, 0.003, 0.002, 0.004, 0.006, 0.003]",post_hoc,design_fixed_after_checkpoint
+design,lit_copy,,"[0.85, 0.5, 0.25, 0.2, 0.15, 0.1, 0.1, 0.08, 0.06, 0.05, 0.05, 0.03]",post_hoc,design_fixed_after_checkpoint
+design,motif_tf_has_motif,,0.6,post_hoc,design_fixed_after_checkpoint
+design,motif_coverage_given_motif,,0.9,post_hoc,design_fixed_after_checkpoint
+design,motif_sensitivity,,"[0.1, 0.09]",post_hoc,design_fixed_after_checkpoint
+design,motif_fpr,,"[0.02, 0.015]",post_hoc,design_fixed_after_checkpoint
+design,motif_burst_report,,"[0.65, 0.75]",post_hoc,design_fixed_after_checkpoint
+design,motif_burst_mean,,0.04,post_hoc,design_fixed_after_checkpoint
+design,motif_burst_log_mu,,-0.5,post_hoc,design_fixed_after_checkpoint
+design,motif_burst_log_sd,,1.0,post_hoc,design_fixed_after_checkpoint
+design,motif_burst_max,,0.3,post_hoc,design_fixed_after_checkpoint
+design,coexp_coverage,,0.7,post_hoc,design_fixed_after_checkpoint
+design,coexp_sensitivity,,0.12,post_hoc,design_fixed_after_checkpoint
+design,coexp_fpr,,0.07,post_hoc,design_fixed_after_checkpoint
+design,mask,,curated_conditional (MOTIF/COEXP observed only on LIT-reported edges of covered TFs),post_hoc,design_fixed_after_checkpoint
+design,scenarios,,"[""null"", ""bio_hub"", ""copying""]",post_hoc,design_fixed_after_checkpoint
+design,n_reps,,20,post_hoc,design_fixed_after_checkpoint
+design,models,,"[""em"", ""dependence"", ""family_regularized"", ""family_hb""]",post_hoc,design_fixed_after_checkpoint
+design,obs_models,,"[""family_hb_obs"", ""em_obs""]",post_hoc,design_fixed_after_checkpoint
+design,n_restarts,,"{""family_hb"": 30, ""family_hb_obs"": 20, ""default"": 10}",post_hoc,design_fixed_after_checkpoint
+design,baselines,,"[""union"", ""majority"", ""vote_fraction"", ""fisher"", ""stouffer""]",post_hoc,design_fixed_after_checkpoint
+design,promotion_q,,0.05,post_hoc,design_fixed_after_checkpoint
+design,size_match_reference,,family_hb,post_hoc,design_fixed_after_checkpoint
+design,set_rules,,"[""bfdr05"", ""size_matched"", ""size_oracle""]",post_hoc,design_fixed_after_checkpoint
+design,n_deciles,,10,post_hoc,design_fixed_after_checkpoint
+design,n_lit_quintiles,,5,post_hoc,design_fixed_after_checkpoint
+design,table_scenario_labels,,"{""null"": ""null_independent""}",post_hoc,design_fixed_after_checkpoint
+realised,n_replicates_fitted em,,"{""null_independent"": 20, ""bio_hub"": 20, ""copying"": 20}",post_hoc,design_fixed_after_checkpoint
+realised,n_replicates_fitted dependence,,"{""null_independent"": 20, ""bio_hub"": 20, ""copying"": 20}",post_hoc,design_fixed_after_checkpoint
+realised,n_replicates_fitted family_regularized,,"{""null_independent"": 20, ""bio_hub"": 20, ""copying"": 20}",post_hoc,design_fixed_after_checkpoint
+realised,n_replicates_fitted family_hb,,"{""null_independent"": 20, ""bio_hub"": 20, ""copying"": 20}",post_hoc,design_fixed_after_checkpoint
+realised,n_replicates_fitted family_hb_obs,,"{""null_independent"": 5, ""bio_hub"": 4, ""copying"": 3}",post_hoc,design_fixed_after_checkpoint
+realised,n_replicates_fitted em_obs,,"{""null_independent"": 20, ""bio_hub"": 20, ""copying"": 20}",post_hoc,design_fixed_after_checkpoint
+realised,models_with_fewer_replicates_than_designed,,"[""family_hb_obs""]",post_hoc,design_fixed_after_checkpoint
+realised,realised_coverage (replicates fitted by 'fit' without --full-design),,"{""family_hb_obs"": {""null_independent"": [0, 1, 2, 3, 4], ""bio_hub"": [0, 1, 2, 3], ""copying"": [1, 2, 3]}}",post_hoc,design_fixed_after_checkpoint
+realised,realised_coverage_reason,,"family_hb_obs fits (10-35 min each) were stopped on 2026-10-13 for compute reasons, in replicate-first order, when the fits finished by then were known to select the same inflated-T optimum; copying rep00 crashed on a failed restart and its guarded refit was abandoned under load.  Rows of this model are means over these replicates only.",post_hoc,design_fixed_after_checkpoint
+diagnostic,restart_check,,"{""added_on"": ""2026-10-13"", ""why"": ""the first em_obs fits (10 restarts, as designed) selected an optimum with an inflated class T in most replicates but reached it from only 1-5 of 10 starts; in the other replicates all 10 starts ended in a truth-aligned optimum.  The check refits those replicates with 50 restarts (the number used on the real data) to see whether the truth-aligned optimum is the best one or a local one."", ""models"": [""em_obs"", ""family_hb_obs""], ""n_restarts"": 50}",post_hoc,design_fixed_after_checkpoint
+diagnostic,oracle_check,,"{""added_on"": ""2026-10-13"", ""why"": ""the ignorable-mask oracle is over-confident at popular TFs (true rate / mean credibility of reported edges 0.75-0.87 in the top popularity decile).  The check compares it with the oracle that counts covered-but-unobserved LIT entries as non-reports, to see whether the target-node observation rule explains the miscalibration and how much of the hub concentration it accounts for."", ""reps"": ""0-19""}",post_hoc,design_fixed_after_checkpoint
+calibration,"real_w (T, N, B_LIT, B_MOTIF)",,0.0031 0.9469 0.0038 0.0462,post_hoc,design_fixed_after_checkpoint
+calibration,real_fit_alpha (min/median/max),LIT,0.1871 / 0.4025 / 0.6682,post_hoc,design_fixed_after_checkpoint
+calibration,sim_realised_alpha null (min/median/max),LIT,0.4349 / 0.5211 / 0.6719,post_hoc,design_fixed_after_checkpoint
+calibration,sim_family_hb_fit_alpha null (min/median/max),LIT,0.5071 / 0.6030 / 0.7484,post_hoc,design_fixed_after_checkpoint
+calibration,real_fit_beta (min/median/max),LIT,0.0001 / 0.0036 / 0.0789,post_hoc,design_fixed_after_checkpoint
+calibration,sim_realised_beta null (min/median/max),LIT,0.0016 / 0.0068 / 0.0207,post_hoc,design_fixed_after_checkpoint
+calibration,sim_family_hb_fit_beta null (min/median/max),LIT,0.0013 / 0.0065 / 0.0203,post_hoc,design_fixed_after_checkpoint
+calibration,real_fit_gamma (min/median/max),LIT,0.0229 / 0.1102 / 0.9569,post_hoc,design_fixed_after_checkpoint
+calibration,sim_realised_gamma null (min/median/max),LIT,0.2634 / 0.3174 / 0.8549,post_hoc,design_fixed_after_checkpoint
+calibration,sim_family_hb_fit_gamma null (min/median/max),LIT,0.2867 / 0.3762 / 0.5936,post_hoc,design_fixed_after_checkpoint
+calibration,real_fit_alpha (min/median/max),MOTIF,0.0795 / 0.0802 / 0.0809,post_hoc,design_fixed_after_checkpoint
+calibration,sim_realised_alpha null (min/median/max),MOTIF,0.0909 / 0.0960 / 0.1012,post_hoc,design_fixed_after_checkpoint
+calibration,sim_family_hb_fit_alpha null (min/median/max),MOTIF,0.1032 / 0.1071 / 0.1111,post_hoc,design_fixed_after_checkpoint
+calibration,real_fit_beta (min/median/max),MOTIF,0.0148 / 0.0187 / 0.0226,post_hoc,design_fixed_after_checkpoint
+calibration,sim_realised_beta null (min/median/max),MOTIF,0.0150 / 0.0176 / 0.0203,post_hoc,design_fixed_after_checkpoint
+calibration,sim_family_hb_fit_beta null (min/median/max),MOTIF,0.0192 / 0.0198 / 0.0204,post_hoc,design_fixed_after_checkpoint
+calibration,real_fit_gamma (min/median/max),MOTIF,0.6170 / 0.6865 / 0.7560,post_hoc,design_fixed_after_checkpoint
+calibration,sim_realised_gamma null (min/median/max),MOTIF,0.6538 / 0.7027 / 0.7517,post_hoc,design_fixed_after_checkpoint
+calibration,sim_family_hb_fit_gamma null (min/median/max),MOTIF,0.7227 / 0.7381 / 0.7535,post_hoc,design_fixed_after_checkpoint
+calibration,real_fit_alpha (min/median/max),COEXP,0.1079 / 0.1079 / 0.1079,post_hoc,design_fixed_after_checkpoint
+calibration,sim_realised_alpha null (min/median/max),COEXP,0.1193 / 0.1193 / 0.1193,post_hoc,design_fixed_after_checkpoint
+calibration,sim_family_hb_fit_alpha null (min/median/max),COEXP,0.1204 / 0.1204 / 0.1204,post_hoc,design_fixed_after_checkpoint
+calibration,real_fit_beta (min/median/max),COEXP,0.0754 / 0.0754 / 0.0754,post_hoc,design_fixed_after_checkpoint
+calibration,sim_realised_beta null (min/median/max),COEXP,0.0699 / 0.0699 / 0.0699,post_hoc,design_fixed_after_checkpoint
+calibration,sim_family_hb_fit_beta null (min/median/max),COEXP,0.0714 / 0.0714 / 0.0714,post_hoc,design_fixed_after_checkpoint
+calibration,sim_realised_gamma null (min/median/max),COEXP,,post_hoc,design_fixed_after_checkpoint
+calibration,sim_family_hb_fit_gamma null (min/median/max),COEXP,,post_hoc,design_fixed_after_checkpoint

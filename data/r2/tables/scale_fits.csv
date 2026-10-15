@@ -1,0 +1,54 @@
+session,quantity,subset,form,x,y,n,slope,slope_se,intercept,r2,analysis_status
+a,P vs N,independent chunked_stream K=10,log10(y) = intercept + slope * log10(x),N,P,3,0.46513416759747384,0.006077627714135121,0.05819592848529673,0.999829298412207,prespecified
+a,P vs N,independent chunked_stream K=21,log10(y) = intercept + slope * log10(x),N,P,4,0.49146160742204076,0.01293916742632685,0.45943667036266655,0.9986155992914626,prespecified
+a,P vs N,independent chunked_stream K=42,log10(y) = intercept + slope * log10(x),N,P,3,0.5651229510324906,0.006010999049554955,1.070489551150937,0.9998868750773025,prespecified
+a,P vs N,template chunked_stream K=10,log10(y) = intercept + slope * log10(x),N,P,3,0.5217458047454148,0.02228797974337944,-0.06651840709084149,0.9981784894789675,prespecified
+a,P vs N,template chunked_stream K=21,log10(y) = intercept + slope * log10(x),N,P,5,0.6315795600687465,0.006800876320346469,-0.10126386686683066,0.9996522686619793,prespecified
+a,P vs N,template chunked_stream K=42,log10(y) = intercept + slope * log10(x),N,P,4,0.6503672704617954,0.01471183240492381,0.5410566570374175,0.9989776444756429,prespecified
+a,P vs N,template dense_unique K=21,log10(y) = intercept + slope * log10(x),N,P,4,0.6231630416921773,0.007417217559122591,-0.05202049460412329,0.9997167397601938,prespecified
+a,compression wall time vs N,"chunked_stream, all K and generators",log10(y) = intercept + slope * log10(x),N,t_compress_s,22,1.088122703051661,0.06917129922399598,-7.459015639530772,0.9252222829720136,prespecified
+a,compression wall time vs N*K,"chunked_stream, all K and generators",log10(y) = intercept + slope * log10(x),N*K,t_compress_s,22,1.065753284106367,0.022109017346204088,-8.73640689194454,0.9914663759178522,prespecified
+a,peak RSS vs N,"chunked_stream, all K and generators",log10(y) = intercept + slope * log10(x),N,peak_rss_mib,22,0.2857850577193223,0.018867271831861623,0.7142153571441792,0.9198189862663221,prespecified
+a,compression peak RSS (bytes) linear in N,"chunked_stream, all K and generators",y = intercept + slope * x,N,peak_rss_bytes,22,7.873303697380845,1.173780406396461,311288794.2416343,0.692272269121465,prespecified
+a,compression wall time vs N,"dense_unique, all K and generators",log10(y) = intercept + slope * log10(x),N,t_compress_s,4,1.192258458558076,0.06030864703888534,-6.159757960767118,0.9949086663759045,prespecified
+a,compression wall time vs N*K,"dense_unique, all K and generators",log10(y) = intercept + slope * log10(x),N*K,t_compress_s,4,1.1922584585580767,0.06030864703888502,-7.736185098982332,0.9949086663759045,prespecified
+a,peak RSS vs N,"dense_unique, all K and generators",log10(y) = intercept + slope * log10(x),N,peak_rss_mib,4,0.44563016495074903,0.032846551578350654,-0.18791950725488613,0.9892510285926264,prespecified
+a,compression peak RSS (bytes) linear in N,"dense_unique, all K and generators",y = intercept + slope * x,N,peak_rss_bytes,4,78.35239090312506,7.1772094560081205,157646710.87931263,0.9834952482611296,prespecified
+a,value+gradient time vs P*K*S,all,log10(y) = intercept + slope * log10(x),P*K*S,t_vg_s,26,0.5577330936788903,0.03871206041294275,-5.809658023679201,0.8963587058794269,prespecified
+a,L-BFGS evaluation time vs P*K*S,all,log10(y) = intercept + slope * log10(x),P*K*S,t_per_lbfgs_eval_s,25,0.39164396664243795,0.031035504808392275,-4.342680820268742,0.8737961231809896,prespecified
+a,MAP 10-restart time vs P*K*S,"all, measured or extrapolated",log10(y) = intercept + slope * log10(x),P*K*S,t_map_10_s,25,0.5580626153627846,0.05006221914988522,-1.1964765754731381,0.8438180074826692,prespecified
+a,MAP peak RSS vs P*K,all,log10(y) = intercept + slope * log10(x),P*K,peak_rss_mib,26,0.24892991557737232,0.029078602660065227,1.637510888009761,0.7532987409558474,prespecified
+a,value+gradient time vs P*K*S,P >= 1e4,log10(y) = intercept + slope * log10(x),P*K*S,t_vg_s,12,0.8441612155884206,0.06437553313586512,-7.905977245214089,0.9450406751619047,prespecified
+a,L-BFGS evaluation time vs P*K*S,P >= 1e4,log10(y) = intercept + slope * log10(x),P*K*S,t_per_lbfgs_eval_s,11,0.6283288122609556,0.04812116691796463,-6.0825991134155695,0.9498582311329222,prespecified
+a,MAP 10-restart time vs P*K*S,"P >= 1e4, measured or extrapolated",log10(y) = intercept + slope * log10(x),P*K*S,t_map_10_s,11,0.8988795942343976,0.11592224139141272,-3.6464583598617395,0.869804843570462,prespecified
+a,MAP peak RSS vs P*K,P >= 1e4,log10(y) = intercept + slope * log10(x),P*K,peak_rss_mib,12,0.5020274769044735,0.042061525837288685,-0.048987804859125086,0.9344078947191948,prespecified
+a,MAP worker peak RSS (bytes) linear in P*K,all,y = intercept + slope * x,P*K,peak_rss_bytes,26,141.6806726866615,6.475687504430154,775816969.1160069,0.9522563450896785,prespecified
+a,MAP evaluations per restart vs N,"template + independent, restarts run",log10(y) = intercept + slope * log10(x),N,nfev_mean,22,0.4189315922387177,0.021855510388665546,0.32246522244590475,0.9483766110330334,prespecified
+a,MAP evaluations per restart vs P,"template + independent, restarts run",log10(y) = intercept + slope * log10(x),P,nfev_mean,22,0.40218368743795496,0.05725935901158471,1.4017091025629687,0.711545776800093,prespecified
+a,NUTS time per leapfrog step (compile excluded) vs P*K*S,measured,log10(y) = intercept + slope * log10(x),P*K*S,t_per_step_excl_compile_s,8,0.8018587794627877,0.0476174522825201,-7.588304155572184,0.9792797702462022,prespecified
+a,NUTS 2x300/300 wall time vs P*K*S,measured,log10(y) = intercept + slope * log10(x),P*K*S,t_nuts_s,8,0.8124143116633604,0.1405584982492339,-1.8795801457610204,0.847743808278985,prespecified
+a,NUTS leapfrog steps per iteration vs N,measured,log10(y) = intercept + slope * log10(x),N,steps_per_iter_mean,8,0.36263499599510546,0.03132423776522926,0.46317307938483765,0.9571498087731191,prespecified
+b,compression wall time vs N,"chunked_stream, all K and generators",log10(y) = intercept + slope * log10(x),N,t_compress_s,22,0.9004394176415735,0.09568330556447363,-5.963739026018093,0.8157697516472058,post_hoc
+b,compression wall time vs N*K,"chunked_stream, all K and generators",log10(y) = intercept + slope * log10(x),N*K,t_compress_s,22,0.87806230858976,0.07705671999914827,-6.991429891793518,0.8665299186341517,post_hoc
+b,peak RSS vs N,"chunked_stream, all K and generators",log10(y) = intercept + slope * log10(x),N,peak_rss_mib,22,0.28287288366016056,0.017284363275090083,0.7360228464601146,0.9305170175990374,post_hoc
+b,compression peak RSS (bytes) linear in N,"chunked_stream, all K and generators",y = intercept + slope * x,N,peak_rss_bytes,22,7.596108070346224,1.1688188629318494,315028367.8956189,0.6786451296541907,post_hoc
+b,compression wall time vs N,"dense_unique, all K and generators",log10(y) = intercept + slope * log10(x),N,t_compress_s,4,0.8585985954798712,0.08369949727334541,-3.9247831517332434,0.9813482957777427,post_hoc
+b,compression wall time vs N*K,"dense_unique, all K and generators",log10(y) = intercept + slope * log10(x),N*K,t_compress_s,4,0.8585985954798714,0.0836994972733452,-5.060038781108174,0.9813482957777427,post_hoc
+b,peak RSS vs N,"dense_unique, all K and generators",log10(y) = intercept + slope * log10(x),N,peak_rss_mib,4,0.44220012698482397,0.058459330281576065,-0.1727931991420785,0.9662262884060514,post_hoc
+b,compression peak RSS (bytes) linear in N,"dense_unique, all K and generators",y = intercept + slope * x,N,peak_rss_bytes,4,80.45373427343677,7.5708352611235,144611572.98516288,0.9825979257425089,post_hoc
+b,value+gradient time vs P*K*S,all,log10(y) = intercept + slope * log10(x),P*K*S,t_vg_s,26,0.5088107800991635,0.050103364162764376,-5.564466120775151,0.8112146838901976,post_hoc
+b,value+gradient time (minimum) vs P*K*S,all,log10(y) = intercept + slope * log10(x),P*K*S,t_vg_min_s,26,0.6133240904002818,0.04267478652493772,-6.493030926016903,0.8959037115056028,post_hoc
+b,L-BFGS evaluation time vs P*K*S,all,log10(y) = intercept + slope * log10(x),P*K*S,t_per_lbfgs_eval_s,19,0.23418654303431966,0.03626152303757746,-3.7534376063334043,0.7104371722417819,post_hoc
+b,MAP 10-restart time vs P*K*S,"all, measured or extrapolated",log10(y) = intercept + slope * log10(x),P*K*S,t_map_10_s,19,0.2947025928233303,0.06558068230790301,-0.06223018893150312,0.5429334331071873,post_hoc
+b,MAP peak RSS vs P*K,all,log10(y) = intercept + slope * log10(x),P*K,peak_rss_mib,26,0.2298191453960519,0.023947619210297224,1.7471238968349658,0.7932771576656433,post_hoc
+b,value+gradient time vs P*K*S,P >= 1e4,log10(y) = intercept + slope * log10(x),P*K*S,t_vg_s,12,0.9229280242974227,0.05732320608527571,-8.587829870735684,0.962856168928767,post_hoc
+b,value+gradient time (minimum) vs P*K*S,P >= 1e4,log10(y) = intercept + slope * log10(x),P*K*S,t_vg_min_s,12,0.9343324789530612,0.061710866549024704,-8.828333086592123,0.9581999739335931,post_hoc
+b,L-BFGS evaluation time vs P*K*S,P >= 1e4,log10(y) = intercept + slope * log10(x),P*K*S,t_per_lbfgs_eval_s,5,0.39146936686282635,0.06382329346457317,-4.684834843697753,0.9261476468135564,post_hoc
+b,MAP 10-restart time vs P*K*S,"P >= 1e4, measured or extrapolated",log10(y) = intercept + slope * log10(x),P*K*S,t_map_10_s,5,0.02876876065949809,0.24080071542930304,1.8434970783259532,0.004735263192134798,post_hoc
+b,MAP peak RSS vs P*K,P >= 1e4,log10(y) = intercept + slope * log10(x),P*K,peak_rss_mib,12,0.42850118294746886,0.043297727968635735,0.423737985696645,0.9073585971008458,post_hoc
+b,MAP worker peak RSS (bytes) linear in P*K,all,y = intercept + slope * x,P*K,peak_rss_bytes,26,92.79889766164234,8.364326706563336,915552092.9748521,0.8368348700686002,post_hoc
+b,MAP evaluations per restart vs N,"template + independent, restarts run",log10(y) = intercept + slope * log10(x),N,nfev_mean,18,0.38312903890549377,0.02326302624329239,0.5173631427575907,0.9442979340580323,post_hoc
+b,MAP evaluations per restart vs P,"template + independent, restarts run",log10(y) = intercept + slope * log10(x),P,nfev_mean,18,0.3500288234460655,0.0944700423252407,1.5745875011632178,0.46179380714197116,post_hoc
+b,NUTS time per leapfrog step (compile excluded) vs P*K*S,measured,log10(y) = intercept + slope * log10(x),P*K*S,t_per_step_excl_compile_s,6,0.5809054571829259,0.03783199205308349,-6.317731219258582,0.983317494978569,post_hoc
+b,NUTS 2x300/300 wall time vs P*K*S,measured,log10(y) = intercept + slope * log10(x),P*K*S,t_nuts_s,6,0.6153794283010664,0.21727146887087395,-0.8510917110295637,0.6672755805255961,post_hoc
+b,NUTS leapfrog steps per iteration vs N,measured,log10(y) = intercept + slope * log10(x),N,steps_per_iter_mean,6,0.36749355527548416,0.04219427632981414,0.4303290791804632,0.9499101040574401,post_hoc

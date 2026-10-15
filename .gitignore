@@ -3,3 +3,35 @@ archive/
 __pycache__/
 *.pyc
 .DS_Store
+
+# Internal planning and review correspondence: not part of the release (the decision letter contains a
+# personal submission-system link). Code that reads planning/ falls back to committed files when it is absent.
+planning/
+REVISION_PLAN.md
+
+# Peer-review correspondence (confidential: reviewer comments, response and cover letters, declarations
+# form and the submission bundle). Kept locally, not part of the public release; their build scripts read
+# files that are only present locally.
+paper/response_to_reviewers.*
+paper/cover_letter.*
+paper/SAGMB_Ethical_and_Legal_Declarations.docx
+paper/r2/response_to_reviewers_R2.*
+paper/r2/cover_letter_R2.*
+paper/r2/letter_quotes.tex
+paper/r2/letter_numbers.tex
+paper/r2/declarations/
+paper/r2/submission/
+paper/r2/build_submission.py
+paper/r2/digest/reviewer_points.md
+src/r2/paper_assets/letter_numbers.py
+src/r2/paper_assets/letter_numbers_spec.py
+src/r2/tests/test_letter_numbers.py
+
+# LaTeX build by-products (paper/main_clean.aux is kept: paper/r2/marked/build_marked.py reads its label numbers)
+*.aux
+!paper/main_clean.aux
+*.log
+*.fls
+*.fdb_latexmk
+*.out
+*.synctex.gz

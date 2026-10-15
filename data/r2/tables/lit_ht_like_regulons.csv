@@ -1,0 +1,10 @@
+source_id,tf,n_targets,n_source_edges,frac_of_source,reason
+ExTRI,SP1,1100,25919,0.04244,large regulon (> 500 targets)
+ExTRI,TP53,791,25919,0.03052,large regulon (> 500 targets)
+ORegAnno,CTCF,96,464,0.2069,named high-throughput-like regulon
+ORegAnno,GATA2,43,464,0.09267,named high-throughput-like regulon
+ORegAnno,STAT1,76,464,0.1638,named high-throughput-like regulon
+ORegAnno,YY1,83,464,0.1789,named high-throughput-like regulon
+PAZAR,HIF1A,635,1289,0.4926,named high-throughput-like; > 500 targets
+TRED,E2F1,600,6626,0.09055,large regulon (> 500 targets)
+TRED,MYC,772,6626,0.1165,large regulon (> 500 targets)

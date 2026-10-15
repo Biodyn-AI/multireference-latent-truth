@@ -1,0 +1,216 @@
+\section{Methods}\label{sec:methods}
+
+\begin{table}[!t]
+  \centering
+  \caption{Glossary of terms specific to this paper.}
+  \label{tab:glossary}
+  \small
+  \begin{tabular}{@{}p{0.24\textwidth}p{0.72\textwidth}@{}}
+    \toprule
+    Term & Meaning \\
+    \midrule
+    Universe & Set of ordered TF--target pairs under consideration: \emph{global} (literature-covered TFs $\times$ genes) or \emph{tissue-context} (pairs both foundation models can score in a tissue). \\
+    Annotator; family & A primary evidence resource; its evidence modality (literature, motif, coexpression; ChIP held out). \\
+    Observation pattern & For one edge, which annotators observe it and which of those report it. Edges with equal patterns form a tie block. \\
+    Credibility & Posterior probability that an edge is a true regulatory edge, \cref{eq:credibility}. \\
+    Burst class & Latent class of non-edges co-reported at an elevated rate within one family. \\
+    Predicted set & A method's \nTopK{} highest-scoring targets per TF. \\
+    Held-in; held out & Evidence that enters the fit (literature, motif, coexpression annotators); evidence used only for evaluation (ChIP references, perturbation screens). \\
+    Curated-conditional observation model & Motif and coexpression annotators observe only edges with held-in literature-curated support; a literature annotator observes the pairs of its TFs and target genes. \\
+    MAP; NUTS & Posterior-mode (maximum a posteriori) estimate; No-U-Turn Hamiltonian Monte Carlo sampler. \\
+    EM baseline & Two-class Dawid--Skene latent-class model with conditionally independent annotators. \\
+    Mode switch & A dropout fit whose selected optimum is not the continuation of the full-data posterior mode. \\
+    Design-faithful simulator & Simulation from the fitted model that keeps the real literature masks and rebuilds the curated-conditional masks from the simulated reports. \\
+    Evaluable edge & Edge for which a held-out reference can provide a label. \\
+    AP lift; $\mathrm{Enr}@k$ & Average precision, or precision of the top $k$ edges, divided by the positive rate of the evaluable edges. \\
+    O/E; stratified enrichment & Observed over expected positives under a null with TF effects (TF-matched) or with TF and target-degree effects (stratified). \\
+    Composition-adjusted AP lift & AP lift divided by its expectation under random ordering of the edges within each TF. \\
+    BFDR & Posterior expected false discovery rate of a set, \cref{eq:bfdr}. \\
+    Tier & Strong, Moderate (and, for dual-universe tiers, Conditional, Exploratory): claim grades defined by BFDR thresholds. \\
+    Dual-universe tier & Tier combining the levels under the global fit and the tissue-context fit. \\
+    Promotion & Reporting an edge as a supported claim (tier Strong or Moderate). \\
+    Governance & The rule set mapping credibilities to tiers and promoted claims. \\
+    Over-promotion index & Share of selected edges in a TF group divided by the share of held-out positives in that group. \\
+    Support floor & Smallest number of promoted evaluable edges giving \nRepPowerPct{}\% power in a study. \\
+    L1O, L2O, L3O & Leave-one-, two-, three-study-out refits of the pooled replication model. \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Terms that are specific to this paper are collected in \Cref{tab:glossary}.
+
+\subsection{Notation and observation model}\label{sec:notation}
+Let $\mathcal{U}=\{i=(t,g)\}$ be a candidate \emph{universe} of ordered pairs of a transcription factor (TF) $t$ and a target gene $g\neq t$, and let $j=1,\dots,K$ index evidence \emph{annotators}: public primary resources that report TF--target edges (\Cref{sec:data-annotators}).
+Each annotator belongs to an evidence-modality \emph{family} $f(j)\in\mathcal{F}$ (literature, motif, coexpression).
+An annotator can only be informative about edges it could have reported. We encode this by an observation indicator $o_{ij}\in\{0,1\}$ and, when $o_{ij}=1$, a report $r_{ij}\in\{0,1\}$ ($r_{ij}=1$ if annotator $j$ lists edge $i$).
+Under the curated-conditional observation model (\Cref{sec:data-annotators}) a literature annotator observes $(t,g)$ when it covers $t$ and $g$ occurs in it, and a motif or coexpression annotator observes $(t,g)$ when it covers $t$ and the edge has held-in literature-curated support.
+The estimators of \Cref{sec:model,sec:ladder} treat the observation indicators as ignorable (missing at random given the design); \Cref{sec:obsmodel} relaxes this assumption.
+
+\subsection{Hierarchical latent-class model with family-specific dependence}\label{sec:model}
+Each edge carries a latent class $z_i\in\mathcal{C}=\{\mathrm{T},\mathrm{N}\}\cup\{\mathrm{B}_f: f\in\mathcal{F},\ |f|\ge 2\}$: a true regulatory edge (T), a clean non-edge (N), or a \emph{family-$f$ burst} non-edge ($\mathrm{B}_f$), that is, a non-edge that the annotators of family $f$ co-report at an elevated rate because of a shared artefact such as a copied literature claim or a promiscuous motif.
+Burst classes are defined only for families with at least two annotators, because a single annotator cannot distinguish a burst from its own false-positive rate; with the annotators used here these are the literature and motif families.
+The generative model, which we call Family-HB, is
+\begin{align}
+  z_i \mid \mathbf{w} &\sim \mathrm{Categorical}(\mathbf{w}), & \mathbf{w}&\sim\mathrm{Dirichlet}(1,\dots,1), \label{eq:class}\\
+  r_{ij}\mid z_i=c,\ o_{ij}=1 &\sim \mathrm{Bernoulli}(\theta_{jc}) \quad\text{independently over } j, \label{eq:emission}
+\end{align}
+with annotator-specific reporting rates
+\begin{equation}
+  \theta_{j\mathrm{N}}=\beta_j=\sigma(b_j),\quad
+  \theta_{j\mathrm{T}}=\alpha_j=\beta_j+(1-\beta_j)\,\sigma(a_j),\quad
+  \theta_{j\mathrm{B}_f}=\begin{cases}\gamma_j=\beta_j+(1-\beta_j)\,\sigma(g_j), & f(j)=f,\\ \beta_j, & f(j)\neq f,\end{cases}
+  \label{eq:rates}
+\end{equation}
+where $\sigma$ is the logistic function.
+The parametrisation enforces $\alpha_j>\beta_j$, the usual condition that every annotator reports true edges more often than clean non-edges, and $\gamma_j>\beta_j$.
+The true class differs from a burst class in that it raises reporting in \emph{every} family, whereas $\mathrm{B}_f$ raises it only within family $f$. Latent-class models with many conditionally independent binary indicators are generically identifiable up to relabelling~\citep{allman2009identifiability}; how well the data separate T from the literature burst in practice is examined in \Cref{sec:res-fit}.
+Annotator parameters are pooled hierarchically within families: for $q\in\{b,a,g\}$,
+\begin{equation}
+  q_j \sim \mathcal{N}\big(\mu^{q}_{f(j)},\tau_q^2\big),\qquad
+  \mu^{q}_{f}\sim\mathcal{N}\big(\mu^{q}_0,\omega_q^2\big),\qquad
+  \mu^{q}_0\sim\mathcal{N}(m_q,2^2),\qquad
+  \tau_q,\omega_q\sim\mathrm{HalfNormal}(1),
+  \label{eq:hier}
+\end{equation}
+with $m_b=\operatorname{logit}(0.01)$ and $m_a=m_g=0$, implemented in non-centred form.
+The quantity reported for every edge is its \emph{credibility}, the posterior probability of the true class,
+\begin{equation}
+  c_i=P(z_i=\mathrm{T}\mid \mathbf{o}_i,\mathbf{r}_i,\Theta)=
+  \frac{w_{\mathrm{T}}\prod_{j:o_{ij}=1}\theta_{j\mathrm{T}}^{r_{ij}}(1-\theta_{j\mathrm{T}})^{1-r_{ij}}}
+       {\sum_{c\in\mathcal{C}} w_c\prod_{j:o_{ij}=1}\theta_{jc}^{r_{ij}}(1-\theta_{jc})^{1-r_{ij}}}.
+  \label{eq:credibility}
+\end{equation}
+Under full Bayesian inference we report the posterior mean $\bar c_i=E[c_i\mid\text{data}]$ and a 95\% credible interval.
+
+\paragraph{Pattern collapse.}
+The credibility and the likelihood contribution of edge $i$ depend on the data only through its \emph{observation pattern} $(\mathbf{o}_i,\mathbf{r}_i)$. The model is therefore evaluated over the $P$ distinct patterns weighted by their edge counts $n_p$:
+\begin{equation}
+  \log p(\text{data}\mid\Theta)=\sum_{p=1}^{P} n_p \log\sum_{c\in\mathcal{C}} w_c \prod_{j:o_{pj}=1}\theta_{jc}^{r_{pj}}(1-\theta_{jc})^{1-r_{pj}}.
+  \label{eq:collapsed}
+\end{equation}
+Edges with the same pattern receive identical credibility. All ranking-based procedures below treat such \emph{tie blocks} as indivisible, or average over uniformly random orderings within a block.
+
+\subsection{Estimator ladder and baselines}\label{sec:ladder}
+Five latent-class estimators are compared; all are special cases of one implementation:
+(1) the \emph{EM baseline}, a two-class Dawid--Skene model~\citep{dawid1979maximum} with independent $\mathcal{N}(m_q,3^2)$ priors on the annotator parameters (named after the expectation--maximisation algorithm of the original proposal; here it is fitted by the same posterior-mode search as the other estimators);
+(2) a \emph{dependence-aware} model with one global burst class whose rates satisfy $\beta_j<\gamma_j<\alpha_j$ for every annotator;
+(3) a \emph{multifactor} model with two ordered global burst classes ($\beta_j<\gamma_{j1}<\gamma_{j2}<\alpha_j$);
+(4) a \emph{family-regularized} model, the two-class model with the hierarchical prior \eqref{eq:hier}; and
+(5) \emph{Family-HB}, the full model \eqref{eq:class}--\eqref{eq:hier}.
+Burst classes are the latent-class analogue of the conditional-dependence terms used for diagnostic tests without a gold standard~\citep{qu1996random,dendukuri2001bayesian,albert2004cautionary}.
+
+The estimators are compared with three kinds of baseline.
+\emph{Combination rules} computed from the observation pattern: union (any report), majority (at least two reports), number and fraction of reporting annotators, number of reporting families, and Fisher's and Stouffer's methods~\citep{fisher1932statistical,stouffer1949american}. For the last two, each annotator contributes the mid-$p$ value of a one-sided binary test whose null reporting probability is the annotator's observed positive rate $\hat\rho_j$ ($p=\hat\rho_j/2$ for a report, $(1+\hat\rho_j)/2$ otherwise); the statistics are $-2\sum_j\log p_{ij}$, referred to $\chi^2_{2|O_i|}$, and $\sum_j\Phi^{-1}(1-p_{ij})/\sqrt{|O_i|}$, where $O_i$ is the set of annotators observing edge $i$. Edges observed by no annotator receive the lowest score.
+\emph{Established integration schemes}, recomputed from the held-in evidence only: the DoRothEA confidence level (A to D) and CollecTRI membership with its curation effort.
+\emph{Expression-based inference} in the tissue universes (GRNBoost2, GENIE3, correlation; \Cref{sec:data-universes}).
+
+\subsection{Informative-observation extension}\label{sec:obsmodel}
+The models above assume that whether an annotator observes an edge carries no information about the edge's class.
+Posterior predictive checks reject this assumption (\Cref{sec:res-fit}), so we also examine a selection-model extension in which observation by a literature annotator is itself an emission.
+A literature annotator $j$ is \emph{eligible} for edge $(t,g)$ if it covers $t$, and observes the edge if, in addition, $g$ occurs in it. For eligible entries,
+\begin{equation}
+  o_{ij}\mid z_i=c \sim \mathrm{Bernoulli}(\eta_{jc}),\qquad \eta_{jc}=\begin{cases}\eta_{j\mathrm{T}}, & c=\mathrm{T},\\ \eta_{j\bar{\mathrm{T}}}, & c\neq \mathrm{T},\end{cases}
+  \label{eq:obs}
+\end{equation}
+followed by \eqref{eq:emission} when $o_{ij}=1$; the logits of $\eta_{j\mathrm{T}}$ and $\eta_{j\bar{\mathrm{T}}}$ receive the same hierarchical prior as the other rates, with no ordering imposed.
+Observation by motif and coexpression annotators is a deterministic function of the held-in literature records under the curated-conditional model and is conditioned on.
+Setting $\eta_{j\mathrm{T}}=\eta_{j\bar{\mathrm{T}}}$ recovers the ignorable model.
+We fit this extension to the Dawid--Skene model and to Family-HB.
+Because eligibility is a property of the TF whereas occurrence in an annotator is a property of the gene, the observation indicator of one gene is replicated over all eligible TFs; as a sensitivity analysis we also fit a composite likelihood in which the observation term of annotator $j$ is weighted by the reciprocal of the number of TFs eligible for $j$.
+This extension was designed after the held-out results had been examined and is reported as a secondary, post hoc analysis; Family-HB with ignorable observation remains the primary model.
+
+\subsection{Inference and convergence diagnostics}\label{sec:inference}
+\paragraph{Posterior mode.} We maximise the log posterior density (maximum a posteriori, MAP, estimation), \eqref{eq:collapsed} plus the log prior, in the unconstrained parametrisation (logit rates, log scales, stick-breaking class weights; the Jacobian keeps the mode away from the boundary of the hierarchical scales) with L-BFGS-B and exact gradients from automatic differentiation, from \nMapRestartsHb{} (Family-HB) or \nMapRestartsOther{} (other estimators) starting points drawn uniformly on $[-2,2]$ in every unconstrained coordinate, followed by Newton steps with the exact Hessian. A start has converged when the largest absolute gradient component is below \nGradTol{} at a positive-definite Hessian. Starts are grouped into distinct optima, and the approximate posterior mass of each optimum is obtained by Laplace's method and, for Family-HB, by bridge sampling~\citep{meng1996simulating,gronau2017tutorial} on posterior draws within each mode.
+
+\paragraph{Full posterior.} The posterior of Family-HB is sampled with the No-U-Turn sampler (NUTS) of Hamiltonian Monte Carlo~\citep{hoffman2014nuts} in NumPyro~\citep{phan2019numpyro}: \nNutsChains{} chains of \nNutsWarmup{} warm-up and \nNutsDraws{} retained iterations, target acceptance \nNutsTargetAccept{}, initialised around the dominant mode, with the latent classes marginalised analytically. Convergence is assessed by the rank-normalised split-$\widehat{R}$ and by bulk and tail effective sample sizes~\citep{vehtari2021rank} for every parameter, and by the number of divergent transitions.
+
+\paragraph{Model checking.} Estimators are compared without validation labels by \nCvFolds{}-fold cross-validated held-out log-likelihood with folds formed by TF, and by posterior predictive checks of the number of reporting annotators per edge, of pairwise co-reporting odds ratios within and between families, and of reporting rates.
+
+\paragraph{Simulation from the fitted model.} We simulate data sets from the fitted Family-HB model and refit them with the same multi-start search. The \emph{design-faithful} simulator keeps the real observation masks of the literature annotators, draws latent classes and literature reports from the fitted model, and then rebuilds the curated-conditional masks of the motif and coexpression annotators from the simulated literature records exactly as the evidence builder does for the real data, before drawing their reports. The literature masks themselves are kept, because the fitted reporting rates, applied to the pairs whose target gene a literature annotator does not contain, would generate more reports there than the literature annotators contain in total. Because the fitted model under-predicts literature reports on well-covered edges (\Cref{sec:res-fit}), the simulated data contain only \nSimInfoPctMin{}--\nSimInfoPctMax{}\% of the real number of motif- or coexpression-observed edges, the edges that carry the informative observations (under the curated-conditional model every such edge has a literature report); a variant whose class weights depend on the stratum of literature masks reproduces the real literature report counts and contains \nSimInfoStratPctMin{}--\nSimInfoStratPctMax{}\% of them. Data are generated both from the dominant optimum of the real fit and, for the immune design, from its second optimum. We compare estimated with true parameters, calibrate credibility against the simulated classes, record whether the selected optimum is the true one, and compute the realised false discovery rate of the resulting claim tiers. A simulator that keeps every mask fixed at the real one, which is inconsistent with the simulated literature reports, is reported as a sensitivity analysis in the Supplement. All simulations were defined after the held-out data had been examined (post hoc); they use no held-out data.
+
+\paragraph{Hub-bias simulation (post hoc).} To ask whether concentration of promoted edges on well-studied TFs is a property of the estimators or of the evidence, we simulate universes with known truth (\nSimHubNrep{} replicates per scenario, each of \nSimHubTfs{} TFs and \nSimHubGenes{} target genes).
+Each TF has a popularity (study intensity) $u_t$ with $\log u_t\sim\mathcal{N}(0,\nSimHubLogPopSd{}^2)$; popularity deciles are equal-count deciles of $u_t$.
+True edges are drawn with a TF degree that is independent of popularity (scenarios \emph{independent} and \emph{copying}) or increases mildly with it (\emph{biological hubs}), and a non-edge is a copied literature claim with a small probability that is constant, except in the \emph{copying} scenario, where it increases with $u_t$.
+Simulated literature annotators cover a TF with a probability that increases with $u_t$ and report true and copied edges with popularity-dependent rates, so that their reports are correlated through popularity even given the class; two motif annotators share a TF-level burst of promiscuous-motif false positives, and one coexpression annotator reports independently.
+Observation follows the curated-conditional rules of the real data, and rates are calibrated loosely to the real global fit.
+Every latent-class estimator is fitted by multi-start MAP, and the combination rules are evaluated at the size of the Family-HB BFDR set.
+The \emph{oracle} is the posterior probability of a true edge under the true generative reporting model, with the observation mask treated as ignorable; it shows how much hub concentration the evidence itself supports.
+The over-promotion index (\Cref{sec:governance}) is computed relative to the true edges, for the top popularity decile and, to mirror the real-data index, for the top quintile of TFs by number of literature-reported targets.
+
+\paragraph{Complexity.} One evaluation of \eqref{eq:collapsed} and its gradient costs $O(PKS)$ operations with $S=|\mathcal{C}|$ and $P\le\min(N,3^K)$; memory is $O(PK+N)$ including the edge-to-pattern index; pattern compression is one streaming pass of cost $O(NK)$. Measured scaling is reported in \Cref{sec:res-compute}.
+
+\subsection{Held-out evaluation}\label{sec:eval}
+\paragraph{Evaluable edges.}
+For a ChIP reference, an edge $(t,g)$ of a universe is \emph{evaluable} if the reference assayed $t$ and $g$ belongs to its gene universe; it is positive if the reference contains it.
+For a perturbation cohort, an edge is evaluable if the cohort tested the pair and the pair is not excluded as a same-band pair; it is positive if the pair is a positive of the cohort (\Cref{sec:data-heldout}).
+The pooled perturbation reference contains every pair evaluable in at least one cohort, positive if positive in at least one.
+
+\paragraph{Metrics.}
+Let $b$ be the positive rate among the $N$ evaluable edges, and $\mathrm{P}@k$ the precision of the $k$ highest-ranked evaluable edges.
+The \emph{AP lift} is the average precision, computed with whole tie blocks as thresholds, divided by $b$; it equals 1 in expectation for a random ranking.
+The \emph{enrichment at $k$} is $\mathrm{Enr}@k=\mathrm{P}@k/b$, where a tie block cut by position $k$ contributes its positive rate to $\mathrm{P}@k$.
+Both equal 1 in expectation for a random ranking at any prevalence; unlike raw precision and $F_1$ they do not rise with the positive rate, although their attainable maximum, $1/b$, does.
+Because TFs differ greatly in their number of positives, we add two measures that remove TF composition: the \emph{within-TF AUROC}, the mean over TFs of the area under the ROC curve computed within the TF, and the \emph{stratified enrichment}, the ratio of observed positives in a selected set to the number expected from a null in which the probability that $(t,g)$ is positive is $\operatorname{expit}(a_t+d_{\mathrm{bin}(g)})$, with a TF effect and an effect of the decile of the target's in-degree in the reference computed leaving the pair's own TF out. Dropping the target term gives the \emph{TF-matched} expectation.
+The \emph{composition-adjusted AP lift} (post hoc, descriptive) divides the AP lift by its exact expectation when the labels are permuted within TFs, so that it equals 1 in expectation for any ranking that orders edges at random within each TF, whatever its ordering between TFs.
+
+\paragraph{Inference.}
+Edges of the same TF are not independent, so interval estimates treat the TF as the unit: confidence intervals are percentile intervals of a bootstrap that resamples TFs, and differences between two scores are tested by a paired TF bootstrap.
+The exceptions are tests that condition on TF strata: $p$-values for a single score come from permuting scores within TFs, and the stratified trend test and the exact stratified tests of \Cref{sec:governance,sec:replication} condition on the margins of each TF, (TF, target-degree) or (cohort, TF) stratum. These tests treat the edges within a stratum as exchangeable; under dependence between the targets of a TF they are anti-conservative, so we use them as screens and base inference on the TF-cluster bootstrap intervals.
+The primary comparison family (post hoc), for each universe and reference, is Family-HB against the EM baseline, Fisher, Stouffer, the vote count, and the DoRothEA and CollecTRI schemes, on AP lift, with Holm adjustment~\citep{holm1979simple}; all other contrasts are descriptive.
+This family was fixed after the first held-out results had been seen and is identified as such in the released decision log; no analysis in this paper was pre-registered.
+
+\paragraph{Universe-aware comparison.}
+For two universes $A$ and $B$ and a precision-type metric, the ratio of raw values factorises as
+\begin{equation}
+  \frac{\mathrm{P}@k(A)}{\mathrm{P}@k(B)}=\frac{b_A}{b_B}\times\frac{\mathrm{Enr}@k(A)}{\mathrm{Enr}@k(B)},
+  \label{eq:decomp}
+\end{equation}
+a prevalence ratio times a ranking ratio.
+To calibrate a raw difference between a context universe and the global universe we draw random sub-universes of the global universe with the same number of evaluable edges and exactly the same number of positives as the context universe (prevalence-matched null), by sampling edges and, post hoc, by sampling whole TF blocks matched to the context's per-TF sizes, and compare the context value with the null distribution.
+
+\subsection{Robustness to annotator dropout}\label{sec:robustness}
+Every estimator and combination rule is refitted after removing one annotator at a time (source dropout), one modality family at a time (family dropout), or all annotators that reached us through one integrator (lineage dropout).
+Latent-class models are refitted from the full-data optimum and from random starts, adding starts until at least two random starts reach the best mode found.
+Two kinds of stability are measured.
+\emph{Method-ranking stability.} Each method $m$ of the tissue universes is scored against a credibility vector $c$ by the posterior-weighted $F_1$ of its predicted set $\mathcal{P}_m$ over all universe edges, $F_1=2\sum_{i\in\mathcal{P}_m}c_i/(|\mathcal{P}_m|+\sum_i c_i)$. For the full-data credibility $c$ and a dropout credibility $c'$, the \emph{rank disagreement} is the fraction of method pairs, among those not tied under either, whose order differs:
+\begin{equation}
+  D(c,c')=\frac{\big|\{(m,m'):\ \operatorname{sign}\Delta_{mm'}(c)\neq\operatorname{sign}\Delta_{mm'}(c'),\ \Delta_{mm'}(c)\Delta_{mm'}(c')\neq 0\}\big|}{\big|\{(m,m'):\ \Delta_{mm'}(c)\Delta_{mm'}(c')\neq 0\}\big|},
+  \label{eq:rankdisagreement}
+\end{equation}
+with $\Delta_{mm'}(c)=F_1(m;c)-F_1(m';c)$.
+\emph{Edge-level stability.} The Spearman correlation between $c$ and $c'$ over edges still observed by some annotator, and the Jaccard index of the sets selected at a fixed size and at a fixed posterior expected false discovery rate.
+Summaries are means over dropout configurations with bootstrap intervals over configurations. Paired differences between estimators are means over configurations with intervals from a bootstrap that resamples the dropped sources; these contrasts, the Jaccard index at equal set size and the decomposition by posterior-mode switches (a dropout optimum that is not the continuation of the full-data mode) were defined after the held-out data had been examined (post hoc), and all their intervals are unadjusted.
+
+\subsection{Claim governance}\label{sec:governance}
+\emph{Governance} denotes the rule set that turns credibilities into graded claims.
+For a set $A$ of edges with posterior mean credibilities $\bar c_i$, the posterior expected false discovery rate is~\citep{newton2004detecting}
+\begin{equation}
+  \mathrm{BFDR}(A)=\frac{1}{|A|}\sum_{i\in A}(1-\bar c_i).
+  \label{eq:bfdr}
+\end{equation}
+Within a universe, tie blocks are ordered by decreasing credibility; an edge is \emph{Strong} if it lies in the largest prefix of whole blocks with $\mathrm{BFDR}\le \nBfdrStrong{}$, and \emph{Moderate} if it lies in the largest prefix with $\mathrm{BFDR}\le \nBfdrModerate{}$ but is not Strong.
+No validation data enter these definitions, and no tie block is ever split.
+In a tissue-context universe each edge has two credibilities, one from the fit to the global universe and one from the fit to the context universe itself. The \emph{dual-universe tier} combines the two levels: \emph{Strong} if Strong under both fits; \emph{Moderate} if at least Moderate under both but not Strong under both; \emph{Conditional} if at least Moderate under exactly one; \emph{Exploratory} otherwise.
+An edge is \emph{promoted}, that is, reported as a supported claim, if its dual-universe tier is Strong or Moderate; a method's promoted predictions are the promoted edges within its predicted set.
+In the global universe, which has a single fit, tiers are the single-fit levels.
+Sensitivity of the promoted set is examined over a grid of the two thresholds, over rules shifted by one tier in either direction, for single-fit tiers, for rank budgets in place of error-rate thresholds, and for promotion by simple rules.
+The shifted rules order the pairs of single-fit levels of an edge (Strong above Moderate above below Moderate) by the lower and then the higher of the two levels and move every tier boundary by one step: the \emph{lenient} rule also calls an edge Strong if it is Strong under one fit and Moderate under the other, and Moderate if it is Strong under one fit and below Moderate under the other; the \emph{strict} rule calls an edge that is Moderate under both fits Conditional, and an edge that is Moderate under one fit and below Moderate under the other Exploratory.
+Whether held-out enrichment declines across the dual tiers is tested by Mantel's extension test for a linear trend~\citep{mantel1963chisquare}, a stratified form of the Cochran--Armitage trend test~\citep{cochran1954some,armitage1955tests}: the association of the held-out label with the ordinal tier score (from Exploratory, lowest, to Strong, highest) over all evaluable edges, stratified by TF or by TF and decile of target degree, conditional on the positive count of each stratum, one-sided for an increasing trend, with Holm adjustment over the tissues and references. Like the exact tests below, it treats the edges within a stratum as exchangeable and is therefore anti-conservative under dependence between the targets of a TF (\Cref{sec:eval}).
+Whether a method's predicted set contains fewer promoted edges than expected from its TFs is tested exactly (post hoc): conditional on, for each TF, the number of its universe edges, of its promoted edges and of its predicted edges, the number of promoted predicted edges is a sum of independent hypergeometric counts.
+\emph{Concentration} of a promoted set is described by the share of its edges belonging to the most frequent TF or two TFs, the number of TFs, and Pielou's evenness~\citep{pielou1966measurement}. A \emph{deconcentrated} subset of a given size is selected greedily by $\operatorname{logit}(\min(\bar c_i^{\mathrm{glob}},\bar c_i^{\mathrm{ctx}}))-\lambda\, n_{t(i)}$, where $n_t$ counts the edges of TF $t$ already selected; the size and $\lambda$ are chosen without validation data by maximising the harmonic mean of the min--max normalised mean credibility and TF diversity over a grid. This rule, like the threshold grid and the shifted rules, uses no held-out data, but it was fixed when held-out results of other analyses already existed.
+The \emph{over-promotion index} of a selected set with respect to a group of TFs is the share of the selected edges that belong to the group divided by the share of held-out positives that do.
+
+\subsection{Cross-cohort replication check}\label{sec:replication}
+The replication check asks whether, within a perturbed TF, promoted edges are more often perturbation positives than the TF's other evaluable edges.
+The unit of replication is the study.
+Let stratum $s$ be a (cohort, TF) pair with $N_s$ evaluable edges, $n_s$ of them promoted and $K_s$ positive, and $X_s$ promoted positives.
+The test statistic is $T=\sum_s X_s$, referred to its exact conditional null distribution given all margins (independent hypergeometric $X_s$; the exact Cochran--Mantel--Haenszel test~\citep{mantel1959statistical}); effect sizes are the stratified enrichment $T/\sum_s n_sK_s/N_s$, with a bootstrap interval that resamples TFs within the study, and the Mantel--Haenszel odds ratio.
+Because the test treats the edges of a stratum as exchangeable, its $p$-values are anti-conservative when targets of one TF are dependent (\Cref{sec:eval}).
+A study \emph{passes} if the stratified enrichment is at least \nRepEndpoint{} with one-sided $p\le\nRepAlpha{}$; pass rates are reported with Wilson intervals~\citep{wilson1927probable}.
+
+\emph{Power and support floor.} Before any replication outcome was computed, the power of this test to detect a \nRepTrueEnrFold{} enrichment at $\alpha=\nRepAlpha{}$ was calculated for every study from its design alone (the $N_s$ and $n_s$ and the overall positive rate), together with the minimum detectable enrichment at \nRepPowerPct{}\% power and a \emph{support floor}, the smallest number of promoted evaluable edges giving \nRepPowerPct{}\% power; the design and the results of this step were stored with a time stamp and a checksum before the outcome step was run.
+Studies below the floor are reported as underpowered, not as failures, although they remain in the denominator of the pass rate over all evaluable studies, and studies in which the margins make an enrichment of \nRepEndpoint{} unattainable are identified.
+
+\emph{Pooling.} Per-study effects are combined in a Bayesian random-effects logistic model for the edges of study $u$ and stratum $s$, $\operatorname{logit}P(\text{positive})=a_{u,s}+\theta_u\cdot\mathbb{1}[\text{promoted}]$, with study effects $\theta_u\sim\mathcal{N}(\mu,\sigma^2)$, $\mu\sim\mathcal{N}(0,1)$ and $\sigma\sim\mathrm{HalfNormal}(0.5)$, and stratum intercepts $a_{u,s}\sim\mathcal{N}(m_u,s_u^2)$ with $m_u\sim\mathcal{N}(-4,3^2)$ and $s_u\sim\mathrm{HalfNormal}(2)$ (centred for strata with many positives and non-centred otherwise), fitted by NUTS; the dependence of the conclusions on the priors of $\mu$ and $\sigma$ is reported for \nRepNPriors{} prior specifications, and a variant with TF-specific slopes $\theta_u+\tau\varepsilon_s$, $\tau\sim\mathrm{HalfNormal}(0.5)$, is a post hoc sensitivity analysis.
+\emph{Leave-$k$-out.} L1O, L2O and L3O denote refits of the pooled model after removing every subset of one, two or three studies; we report the resulting changes in $\mu$ and in the per-study posterior probabilities of passing.
+With few independent studies this analysis is a replication check of limited power, not a validation.

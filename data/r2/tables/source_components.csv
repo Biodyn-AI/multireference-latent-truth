@@ -1,0 +1,42 @@
+label,channel,source_id,status,n_raw_edges,n_clean_edges,n_records,drop_complex,drop_non_hgnc,drop_tf_not_lambert,drop_self_loop,n_kept_records,final_source_id
+ARACNe-GTEx,DoRothEA,ARACNe-GTEx,used,10932,10931,10995.0,0.0,1.0,0.0,0.0,10994.0,ARACNe-GTEx
+DoRothEA-reviews,DoRothEA,DoRothEA-reviews,used,240,240,242.0,0.0,0.0,0.0,0.0,242.0,LIT_other
+FANTOM4,DoRothEA,FANTOM4,used,370,370,376.0,0.0,0.0,0.0,0.0,376.0,FANTOM4
+HOCOMOCO,DoRothEA,HOCOMOCO,used,9435,9433,9540.0,0.0,2.0,0.0,0.0,9538.0,HOCOMOCO
+HTRIdb,DoRothEA,HTRIdb,used,2211,2211,2284.0,0.0,0.0,0.0,0.0,2284.0,HTRIdb
+IntAct,DoRothEA,IntAct,used,645,645,647.0,0.0,0.0,0.0,0.0,647.0,IntAct
+JASPAR,DoRothEA,JASPAR,used,8378,8377,8473.0,0.0,1.0,0.0,0.0,8472.0,JASPAR
+KEGG,DoRothEA,KEGG,used,1223,1223,1230.0,0.0,0.0,0.0,0.0,1230.0,KEGG
+NFIRegulomeDB,DoRothEA,NFIRegulomeDB,used; 21 of 28 edges dropped as duplicates of PAZAR,28,28,28.0,0.0,0.0,0.0,0.0,28.0,LIT_other
+ORegAnno,DoRothEA,ORegAnno,used,464,464,465.0,0.0,0.0,0.0,0.0,465.0,ORegAnno
+PAZAR,DoRothEA,PAZAR,used,1290,1289,1295.0,0.0,1.0,0.0,0.0,1294.0,PAZAR
+PAZAR,DoRothEA,PAZAR-HT,used,152602,152526,153031.0,0.0,76.0,0.0,0.0,152955.0,PAZAR-HT
+ReMap,DoRothEA,ReMap,used,117844,117834,119458.0,0.0,9.0,0.0,2.0,119447.0,ReMap
+RegNetwork,DoRothEA,TRED,used,6628,6626,6660.0,0.0,2.0,0.0,0.0,6658.0,TRED
+TFactS,DoRothEA,TFactS,used,1574,1574,1588.0,0.0,0.0,0.0,0.0,1588.0,TFactS
+TFe,DoRothEA,TFe,used,464,464,468.0,0.0,0.0,0.0,0.0,468.0,TFe
+TRED,DoRothEA,TRED,used,6628,6626,6660.0,0.0,2.0,0.0,0.0,6658.0,TRED
+TRRD,DoRothEA,TRRD,dropped: all 209 edges duplicated in TFactS,209,209,209.0,0.0,0.0,0.0,0.0,209.0,
+TRRUST,DoRothEA,TRRUST,used,6975,6975,7056.0,0.0,0.0,0.0,0.0,7056.0,TRRUST
+CytReg,CollecTRI,CytReg,used,2390,1202,2591.0,1362.0,0.0,23.0,0.0,1206.0,CytReg
+DoRothEA-A,CollecTRI,,excluded: derived integration set,3357,0,,,,,,,
+ExTRI,CollecTRI,ExTRI,used,49303,25919,50754.0,22773.0,0.0,1717.0,2.0,26262.0,ExTRI
+GEREDB,CollecTRI,GEREDB,used,10306,7382,10559.0,2847.0,1.0,257.0,0.0,7454.0,GEREDB
+GOA,CollecTRI,GOA,used,851,605,872.0,90.0,0.0,164.0,0.0,618.0,GOA
+HTRI,CollecTRI,HTRIdb,used,3341,2209,3546.0,1251.0,0.0,8.0,0.0,2287.0,HTRIdb
+IntAct,CollecTRI,IntAct,used,410,215,420.0,105.0,0.0,100.0,0.0,215.0,IntAct
+NTNU.Curated,CollecTRI,NTNU.Curated,used,14570,8992,15131.0,5676.0,0.0,348.0,2.0,9105.0,NTNU.Curated
+Pavlidis2021,CollecTRI,Pavlidis2021,used,1533,1298,1586.0,159.0,0.0,87.0,0.0,1340.0,Pavlidis2021
+SIGNOR,CollecTRI,SIGNOR,used,2732,2090,2811.0,408.0,0.0,285.0,0.0,2118.0,SIGNOR
+TFactS,CollecTRI,TFactS,used,4938,2887,5114.0,1812.0,0.0,397.0,0.0,2905.0,TFactS
+TRRUST,CollecTRI,TRRUST,used,12819,6967,13526.0,5514.0,0.0,971.0,0.0,7041.0,TRRUST
+TRRUST,TRRUST-file,TRRUST,used,8427,6993,9396.0,,24.0,1472.0,25.0,7875.0,TRRUST
+ENCODE-distal,OmniPath-tf_target,ENCODE-distal,held-out CHIP; truncated to DoRothEA/CollecTRI edges; never fitted,2197,2181,2407.0,0.0,0.0,16.0,0.0,2391.0,ENCODE-distal
+ENCODE-proximal,OmniPath-tf_target,ENCODE-proximal,held-out CHIP; truncated to DoRothEA/CollecTRI edges; never fitted,6407,6393,7036.0,0.0,3.0,12.0,0.0,7021.0,ENCODE-proximal
+HTRIdb,OmniPath-tf_target,,excluded: truncated attachment (complete copy used via integrator channel),4866,0,,,,,,,
+KEGG,OmniPath-tf_target,,excluded: truncated attachment (complete copy used via integrator channel),656,0,,,,,,,
+KEGG-MEDICUS,OmniPath-tf_target,,"excluded: truncated attachment, no complete copy available",137,0,,,,,,,
+ORegAnno,OmniPath-tf_target,,excluded: truncated attachment (complete copy used via integrator channel),306,0,,,,,,,
+PAZAR,OmniPath-tf_target,,excluded: truncated attachment (complete copy used via integrator channel),3173,0,,,,,,,
+SIGNOR,OmniPath-tf_target,,excluded: truncated attachment (complete copy used via integrator channel),847,0,,,,,,,
+TRRUST,OmniPath-tf_target,,excluded: truncated attachment (complete copy used via integrator channel),7947,0,,,,,,,

@@ -1,0 +1,13 @@
+universe,config,source,n_folds,complete,heldout_ll_per_edge_mean,heldout_ll_per_edge_se,diff_vs_family_hb_per_edge_mean,diff_vs_family_hb_per_edge_se,diff_vs_family_hb_total_nats,n_folds_better_than_family_hb,heldout_cond_ll_per_cell_mean,n_restarts,min_restarts_within_1e3,rank,analysis_status,post_hoc_columns
+global,family_hb__fam_datadriven,fit_sensitivity,5,True,-0.0680953,0.00336608,1.99027e-05,1.21101e-05,100.72,4,-0.0257179,20,10,1,prespecified,
+global,family_hb__prior_scale0.5,tuning_optimism,5,True,-0.0681146,0.00335405,6.18246e-07,4.24291e-07,3.14885,3,-0.0257314,20,11,2,prespecified,
+global,family_hb__prior_dir0.5,tuning_optimism,5,True,-0.0681152,0.00335437,5.24958e-09,4.41838e-08,0.0307027,2,-0.025732,20,10,3,prespecified,
+global,family_hb,fit_sensitivity,5,True,-0.0681152,0.00335437,0,0,0,0,-0.025732,20,10,4,prespecified,
+global,family_hb__prior_dir2,tuning_optimism,5,True,-0.0681152,0.00335438,-1.39839e-08,8.51458e-08,-0.0788693,3,-0.0257319,20,10,5,prespecified,
+global,family_hb__prior_scale2,tuning_optimism,5,True,-0.0681156,0.00335455,-3.81922e-07,2.35643e-07,-1.94613,1,-0.0257324,20,11,6,prespecified,
+global,family_hb__fam_lineage,fit_sensitivity,5,True,-0.0681582,0.00337798,-4.3014e-05,2.72253e-05,-220.02,1,-0.0257496,20,14,7,prespecified,
+global,multifactor,fit_sensitivity,5,True,-0.0681971,0.00334682,-8.18727e-05,2.14984e-05,-417.528,0,-0.0257719,20,18,8,prespecified,
+global,dependence,fit_sensitivity,5,True,-0.0682704,0.00335509,-0.000155155,2.8024e-05,-790.667,0,-0.0258483,20,20,9,prespecified,
+global,em,fit_sensitivity,5,True,-0.0687488,0.00338995,-0.00063361,5.67015e-05,-3224.46,0,-0.0262693,20,20,10,prespecified,
+global,family_regularized,fit_sensitivity,5,True,-0.0687489,0.00339002,-0.000633706,5.67819e-05,-3224.96,0,-0.0262691,20,19,11,prespecified,
+global,family_hb__fam_singleton,fit_sensitivity,5,True,-0.0687489,0.00339005,-0.000633723,5.68187e-05,-3225.05,0,-0.0262691,20,20,12,prespecified,

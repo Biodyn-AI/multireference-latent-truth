@@ -1,0 +1,46 @@
+key,value,analysis_status
+written,2026-10-15 04:06:22,prespecified
+cpu,Apple M2 Pro,prespecified
+hw.ncpu,10,prespecified
+hw.physicalcpu,10,prespecified
+hw.perflevel0.physicalcpu (performance cores),6,prespecified
+hw.perflevel1.physicalcpu (efficiency cores),4,prespecified
+hw.memsize (bytes),34359738368,prespecified
+os,macOS 26.3 25D125,prespecified
+RAM (GiB),32,prespecified
+platform,macOS-26.3-arm64-arm-64bit,prespecified
+python,3.11.9,prespecified
+python executable,/Users/ihorkendiukhov/anaconda3/bin/python,prespecified
+python executable (resolved),/Users/ihorkendiukhov/anaconda3/bin/python3.11,prespecified
+python prefix,/Users/ihorkendiukhov/anaconda3,prespecified
+package anndata,0.12.7,prespecified
+package arboreto,0.1.6,prespecified
+package arviz,0.23.0,prespecified
+package dask,2025.12.0,prespecified
+package distributed,2025.12.0,prespecified
+package h5py,3.11.0,prespecified
+package jax,0.7.1,prespecified
+package jaxlib,0.7.1,prespecified
+package matplotlib,3.10.8,prespecified
+package numpy,1.26.4,prespecified
+package numpyro,0.19.0,prespecified
+package omnipath,1.0.12,prespecified
+package packaging,25.0,prespecified
+package pandas,2.3.3,prespecified
+package pillow,12.3.0,prespecified
+package psutil,7.2.1,prespecified
+package pyarrow,22.0.0,prespecified
+package pytest,8.0.0,prespecified
+package scanpy,1.10.2,prespecified
+package scikit-learn,1.5.1,prespecified
+package scipy,1.16.3,prespecified
+package statsmodels,0.14.2,prespecified
+package threadpoolctl,3.6.0,prespecified
+pdflatex,pdfTeX 3.141592653-2.6-1.40.26 (TeX Live 2024),prespecified
+env OMP_NUM_THREADS (children),2,prespecified
+env OPENBLAS_NUM_THREADS (children),2,prespecified
+env MKL_NUM_THREADS (children),2,prespecified
+env VECLIB_MAXIMUM_THREADS (children),2,prespecified
+env XLA_FLAGS (children),--xla_cpu_multi_thread_eigen=false intra_op_parallelism_threads=2,prespecified
+niceness of the orchestrator,10,prespecified
+execution,one step subprocess at a time (sequential); machine shared with other users' jobs (load average recorded per step in pipeline_stage_timings.csv),prespecified

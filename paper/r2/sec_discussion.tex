@@ -1,0 +1,53 @@
+\section{Discussion}\label{sec:discussion}
+
+We asked whether treating GRN reference databases as imperfect, mutually dependent annotators of a latent truth gives a better basis for benchmarking than choosing one reference, and we tested the answer against evidence that never entered the primary fits.
+The answer has three parts.
+
+\paragraph{Dependence modelling is supported, but it creates an identifiability problem.}
+Label-free model checks favour latent-class models with burst classes over the conditional-independence model: they predict the reports of held-out TFs better in cross-validation and explain why some literature resources agree. In data simulated from the fitted model they also promote far fewer false claims than the conditional-independence model, and in the separate hub-bias simulation, whose burst structure resembles Family-HB, they concentrate less on hub TFs than EM, Fisher and Stouffer. Both results are expected when the data follow the dependence that Family-HB estimates, and both simulations are post hoc; they show what ignoring dependence would cost if the dependence is as estimated, not that it is.
+The same structure makes the posterior bimodal.
+A cluster of edges reported by several literature resources is either a set of well-supported regulatory edges or a set of claims copied between resources, and only evidence of a different modality can tell the two apart.
+In the global universe the motif and coexpression annotators provide enough of that evidence; in a tissue universe they cover several hundred edges and the second reading retains a posterior probability of \nBridgePTisLgMin{} to \nBridgePTisLgMax{} (bridge sampling, post hoc).
+In the design-faithful simulations the multi-start search picked the wrong reading only when the two were close (log-posterior gaps of at most \nSimWrongGapMax{} nats, against \nHbGapTisMin{}--\nHbGapGlob{} nats in the real fits), but in the fixed-mask sensitivity simulator \nSimFixedWrongN{} replicate selected the wrong reading at a gap of \nSimFixedWrongGapMax{} nats because no restart reached the true mode, so a large gap is reassuring but no guarantee; and when the wrong mode is selected, the error-rate statements of the tiers give no warning.
+Classical latent-class analysis of diagnostic tests faces the same problem when tests share an error mechanism~\citep{albert2004cautionary}; here it is concrete and quantifiable, and the practical consequence is that credibility from references that share one modality should not be trusted without an independent modality to anchor it.
+
+\paragraph{Coverage is informative.}
+Every estimator of the primary analysis, including the simplest, assumes that a pair a resource does not cover is missing at random.
+Held-out ChIP and perturbation data contradict this in post hoc analyses (\Cref{sec:res-heldout}): uncovered pairs are depleted of positives relative to covered pairs that are not reported, yet the models give uncovered pairs the higher credibility.
+This assumption explains why combination rules that place uncovered pairs last beat the latent-class models on the ChIP references; on pooled perturbation data in the global universe most of the gap is instead between-TF composition, although the same mechanism is visible within TFs there and accounts for the within-TF deficits of the tissue universes.
+On reported edges the latent-class ranking is reasonable, and its highest-ranked edges are strongly enriched for held-out support.
+An edge-level selection model in which coverage depends on the latent class does not solve the problem, because coverage is a property of genes and TFs: the latent class collapses onto gene popularity.
+Coverage models at the level of genes or TFs, or a joint model of study intensity and reporting, are the natural next steps; until then, credibility should be used to rank and certify reported edges, and uncovered pairs should be treated as unknown rather than as weakly negative.
+
+\paragraph{Error-rate tiers are useful even where ranking is not better.}
+Bayesian-FDR tiers turned out to be the most useful product of the framework.
+They require no validation data, respect blocks of tied evidence, have a direct error-rate interpretation, and on the ChIP references their held-out enrichment declines from the promoted tiers to Exploratory; on perturbation data it does so only in the global universe.
+They do not rank edges better than simple rules at equal set size; what they add is a model-based statement of how many promoted claims are expected to be false, together with posterior uncertainty and an explicit dependence on the dominant mode.
+That statement holds only under its conditions.
+In simulation it is approximately calibrated within the dominant mode, anti-conservative when the class composition depends on literature coverage or when false claims are copied around hub TFs, and uninformative when the wrong mode is selected; the Moderate tier carries an expected false discovery rate of one in three to two in five; all tiers are conditional on the model's coverage assumption; and the promoted sets concentrate on well-studied TFs largely because the evidence does.
+
+\paragraph{Consequences for benchmarking foundation models.}
+For the foundation models examined here, the framework mostly delivers negative information.
+scGPT attention, extracted in the common way (averaged over layers, heads and cells), is close to the attention a target would receive if each cell attended uniformly to its expressed genes, is not enriched for ENCODE binding beyond that null (the one exception is the stricter ENCODE subset in kidney), and its top-ranked edges are depleted of supported claims (clearly so in the immune universe).
+Geneformer attention, GRNBoost2 and simple correlations do better, but fewer than \nMethFracBoundCorr{}\% of their top-ranked edges reach a promoted tier.
+Scored against the credibilities of any of the \nRobNEst{} estimators and combination rules, raw scGPT attention is among the \nScBottom{} lowest-ranked of the \nRobNMethodsKidLung{} or \nRobNMethodsImm{} methods of each tissue panel, so this conclusion does not depend on the choice of estimator.
+The foundation-model conclusions do depend on extraction choices we did not vary (cells, aggregation over layers and heads, input encoding), so they describe attention as typically used rather than everything the models represent.
+
+\paragraph{Recommendations.}
+For multi-reference GRN evaluation we recommend:
+(i) separating the resources that define credibility from those that judge it, and holding out every resource that shares data with the latter;
+(ii) reporting prevalence-free metrics and stratified enrichment, with intervals that resample TFs, and calibrating any comparison across candidate universes against a prevalence-matched null;
+(iii) modelling dependence between resources, but checking identifiability across modes before interpreting credibility;
+(iv) treating uncovered pairs as unknown;
+(v) reporting claims as error-rate tiers with their posterior uncertainty, and checking them against held-out data whose power has been computed in advance; and
+(vi) fixing every analysis choice before validation data are examined, and labelling every later analysis as such.
+
+\paragraph{Limitations.}
+\emph{Coverage.} The primary model assumes coverage is missing at random, and the results show that it is not.
+\emph{Identifiability.} The tiers are conditional on the dominant mode, and in the tissue universes the evidence for that mode is moderate: a log-posterior gap as large as the real immune one is typical of the dominant reading but only weak evidence against the other.
+\emph{Simulation.} The design-faithful simulator generates data from the fitted Family-HB model and carries only part of the real informative observations, and the hub simulation uses one generator whose burst structure resembles Family-HB; simulated error rates and mode-selection rates, and comparisons of Family-HB with simpler estimators on such data, are therefore indicative rather than calibrated estimates for the real data.
+\emph{Robustness.} The decomposition by posterior-mode switches is post hoc, and the lineage-dropout comparison rests on \nRobLinN{} configurations whose latent-class optima are only weakly certified by the multi-start search.
+\emph{References.} The held-in resources are themselves partly derived from shared literature, and some literature records rest on ChIP evidence. The ChIP references are cell-line data, and ENCODE is permissive.
+\emph{Perturbation data.} \nCohStudiesCap{} studies (\nRepPassAllD{} evaluable, \nRepPassPowD{} adequately powered, mostly in K562 cells) are too few for a validation. Their positives include indirect effects, and literature edges may themselves derive from perturbation studies of the same TFs.
+\emph{Foundation-model scores.} Attention was extracted from \nFmCellsMin{}--\nFmCellsMax{} cells per tissue and averaged over all layers and heads, with input encodings that differ from those used in pretraining; the scGPT cells are the first cells of each file and over-represent Smart-seq2 cells, which have more detected genes. The kidney universe comes from a single donor.
+\emph{Analysis process.} The primary model, evidence and threshold choices were fixed in a dated decision log before this analysis produced any held-out output. The primary comparison family of held-out comparisons, the informative-observation extension, the posterior-mode analysis, the simulations, the robustness contrasts and several controls were defined afterwards and are reported as post hoc. The governance sensitivity grid, the shifted tier rules and the deconcentration rule use no validation data but were fixed when held-out outputs of other analyses already existed, and the replication power calculation was locked before any replication outcome but after the first held-out output of another analysis. No analysis was pre-registered.

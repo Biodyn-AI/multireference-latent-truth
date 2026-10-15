@@ -1,0 +1,11 @@
+universe,replicate,optimum,is_truth_mode,chains,n_chains,r_hat_max_w_theta,ess_bulk_min_w_theta,converged,status,converged_frozen_rule,status_frozen_rule,w_T_lo,w_T_hi,w_T_mean,w_T_covered,analysis_status
+immune,0,0,False,"0,2,3",3,1.00954,528.014,True,assessable,True,assessable,0.00699395,0.0111221,0.00902,False,post_hoc
+immune,0,1,True,1,1,,,False,single_chain,False,single_chain,,,,,post_hoc
+immune,1,0,True,"0,2,3",3,1.01386,450.747,True,assessable,False,flagged_rhat_gt_1.01_or_ess_lt_400,0.00478918,0.00775756,0.00623905,True,post_hoc
+immune,1,1,False,1,1,,,False,single_chain,False,single_chain,,,,,post_hoc
+immune,2,0,False,"1,3",2,1.02589,305.744,True,assessable,False,flagged_rhat_gt_1.01_or_ess_lt_400,0.00678646,0.0114143,0.00916198,False,post_hoc
+immune,2,1,True,"0,2",2,1.01578,324.062,True,assessable,False,flagged_rhat_gt_1.01_or_ess_lt_400,0.00412727,0.00767795,0.00570836,True,post_hoc
+immune,3,0,True,"2,3",2,1.01389,240.064,True,assessable,False,flagged_rhat_gt_1.01_or_ess_lt_400,0.00491918,0.00798604,0.00641048,True,post_hoc
+immune,3,1,False,"0,1",2,1.01231,264.01,True,assessable,False,flagged_rhat_gt_1.01_or_ess_lt_400,0.00782365,0.0118715,0.00972993,False,post_hoc
+immune,4,0,True,"2,3",2,1.01692,293.931,True,assessable,False,flagged_rhat_gt_1.01_or_ess_lt_400,0.00492368,0.0085825,0.00668479,True,post_hoc
+immune,4,1,False,"0,1",2,1.01884,283.231,True,assessable,False,flagged_rhat_gt_1.01_or_ess_lt_400,0.00619905,0.00993939,0.00790548,True,post_hoc
